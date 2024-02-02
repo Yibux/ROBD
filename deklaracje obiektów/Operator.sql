@@ -1,47 +1,37 @@
-//--------------------------------OPEARATOR----------------------------------------------------//
+//--------------------------------OPERATOR----------------------------------------------------//
 
 CREATE OR REPLACE TYPE Operator AS OBJECT
 (
-    Data_zalozenia DATE,
-    Wlasciciel VARCHAR2(100),
-    Uslugi Lista_uslug,
+    Establishment_date DATE,
+    Owner VARCHAR2(100),
+    Services Service_List,
     CONSTRUCTOR FUNCTION Operator
     (
-        Data_zalozenia IN DATE,
-        Wlasciciel IN VARCHAR2,
-        Uslugi IN Lista_uslug
+        Establishment_date IN DATE,
+        Owner IN VARCHAR2,
+        Services IN Service_List
     ) RETURN SELF AS RESULT,
-    MEMBER PROCEDURE dodajUsluge (usluga IN Usluga),
-    MEMBER FUNCTION porownajOperatora (operator IN Operator) RETURN BOOLEAN
+    MEMBER PROCEDURE addService (service IN Service)
 );
 
 CREATE OR REPLACE TYPE BODY Operator AS
     CONSTRUCTOR FUNCTION Operator
     (
-        Data_zalozenia IN DATE,
-        Wlasciciel IN VARCHAR2,
-        Uslugi IN Lista_uslug
+        Establishment_date IN DATE,
+        Owner IN VARCHAR2,
+        Services IN Service_List
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.Data_zalozenia := Data_zalozenia;
-        SELF.Wlasciciel := Wlasciciel;
-        SELF.Uslugi := Uslugi;
+        SELF.Establishment_date := Establishment_date;
+        SELF.Owner := Owner;
+        SELF.Services := Services;
         RETURN;
     END;
 
-    MEMBER PROCEDURE dodajUsluge (usluga IN Usluga) IS
+    MEMBER PROCEDURE addService (service IN Service) IS
     BEGIN
-        SELF.Uslugi.EXTEND;
-        SELF.Uslugi(SELF.Uslugi.COUNT) := usluga;
-    END;
-
-    MEMBER FUNCTION porownajOperatora (operator IN Operator) RETURN BOOLEAN IS
-    BEGIN
-        IF SELF.Data_zalozenia = operator.Data_zalozenia AND SELF.Wlasciciel = operator.Wlasciciel THEN
-            RETURN TRUE;
-        ELSE
-            RETURN FALSE;
-        END IF;
+        SELF.Services.EXTEND;
+        SELF.Services(SELF.Services.COUNT) := service;
     END;
 END;
 /
