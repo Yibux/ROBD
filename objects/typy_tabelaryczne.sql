@@ -1,0 +1,1 @@
+CREATE OR REPLACE TYPE ServiceList AS TABLE OF Service;

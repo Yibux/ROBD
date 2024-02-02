@@ -5,11 +5,15 @@ CREATE OR REPLACE TYPE Operator AS OBJECT
     Establishment_date DATE,
     Owner VARCHAR2(100),
     Services Service_List,
+    Private_individual_clients Private_Individual_List,
+    Company_clients Company_List,
     CONSTRUCTOR FUNCTION Operator
     (
         Establishment_date IN DATE,
         Owner IN VARCHAR2,
-        Services IN Service_List
+        Services IN Service_List,
+        Private_individual_clients IN Private_Individual_List,
+        Company_clients IN Company_List
     ) RETURN SELF AS RESULT,
     MEMBER PROCEDURE addService (service IN Service)
 );

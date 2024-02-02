@@ -3,29 +3,16 @@
 CREATE OR REPLACE TYPE Branch AS OBJECT (
 
     Branch_address Address,
-
     Employees Employee_List,
 
-    Private_individual_clients Private_Individual_List,
-
-    Company_clients Company_List,
-
-
     CONSTRUCTOR FUNCTION Branch(
-
         Branch_address IN Address,
-
-        Employees IN Employee_List,
-
-        Private_individual_clients IN Private_Individual_List,
-
-        Company_clients IN Company_List
+        Employees IN Employee_List
 
     ) RETURN SELF AS RESULT
 
 );
 
--- Implementation of the constructor for the Branch type
 
 CREATE OR REPLACE TYPE BODY Branch AS
 
