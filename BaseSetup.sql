@@ -1,3 +1,38 @@
+//--------------------------------SERVICE----------------------------------------------------//
+CREATE SEQUENCE ServiceSequence START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TYPE Service AS OBJECT
+(
+    ServiceId Number,
+    Description VARCHAR2(100),
+    Price NUMBER,
+    CONSTRUCTOR FUNCTION Service
+    (
+        Description IN VARCHAR2,
+        Price IN NUMBER
+    ) RETURN SELF AS RESULT
+);
+
+/
+
+CREATE OR REPLACE TYPE BODY Service AS
+    CONSTRUCTOR FUNCTION Service
+    (
+        Description IN VARCHAR2,
+        Price IN NUMBER
+    ) RETURN SELF AS RESULT IS
+    BEGIN
+        SELF.ServiceId := ServiceSequence.nextval;
+        SELF.Description := Description;
+        SELF.Price := Price;
+        RETURN;
+    END;
+END;
+
+/
+
+create table ServiceTable of Service (PRIMARY KEY (ServiceId));
+
 //--------------------------------ADDRESS----------------------------------------------------//
 
 CREATE OR REPLACE TYPE Address AS OBJECT
@@ -36,234 +71,141 @@ CREATE OR REPLACE TYPE BODY Address AS
 END;
 /
 
-//--------------------------------SERVICE----------------------------------------------------//
 
-CREATE OR REPLACE TYPE Service AS OBJECT
-(
-    Description VARCHAR2(100),
-    Price       NUMBER,
-    CONSTRUCTOR FUNCTION Service(
-        Description IN VARCHAR2,
-        Price IN NUMBER
-    ) RETURN SELF AS RESULT
-);
+//------------------------------------Client------------------------------------------------//
 
-/
-
-CREATE OR REPLACE TYPE BODY Service AS
-    CONSTRUCTOR FUNCTION Service(
-        Description IN VARCHAR2,
-        Price IN NUMBER
-    ) RETURN SELF AS RESULT IS
-    BEGIN
-        SELF.Description := Description;
-        SELF.Price := Price;
-        RETURN;
-    END;
-END;
-
-/
-
--- CREATE OR REPLACE TYPE ServiceList AS VARRAY(10) OF Service;
-CREATE OR REPLACE TYPE ServiceList AS TABLE OF Service;
-/
-
-//--------------------------------------INVOICE----------------------------------------------//
-
-CREATE OR REPLACE TYPE Invoice AS OBJECT
-(
-    IssueDate DATE,
-    Cost      NUMBER,
-    Services  ServiceList,
-    CONSTRUCTOR FUNCTION Invoice(
-        IssueDate IN DATE,
-        Cost IN NUMBER,
-        Services IN ServiceList
-    ) RETURN SELF AS RESULT
-);
-
-CREATE OR REPLACE TYPE BODY Invoice AS
-    CONSTRUCTOR FUNCTION Invoice(
-        IssueDate IN DATE,
-        Cost IN NUMBER,
-        Services IN ServiceList
-    ) RETURN SELF AS RESULT IS
-    BEGIN
-        SELF.IssueDate := IssueDate;
-        SELF.Cost := Cost;
-        SELF.Services := Services;
-        RETURN;
-    END;
-END;
-/
-
-CREATE OR REPLACE TYPE InvoiceList AS VARRAY(24) OF Invoice;
-/
-
-//------------------------------------ENTITY------------------------------------------------//
-
-CREATE SEQUENCE PersonSequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE ClientSequence START WITH 1 INCREMENT BY 1;
 
 CREATE OR REPLACE TYPE ClientObj AS OBJECT
 (
-    PersonId             Number,
+    ClientId             NUMBER,
     Contract_Start_Date  DATE,
     Contract_End_Date    DATE,
     Registration_Address Address,
-    Phone_Number         VARCHAR(12),
-    Present_Services     ServiceList,
-    Invoices             InvoiceList,
+    Phone_Number         VARCHAR2(12),
+    First_Name           VARCHAR2(20),
+    Last_Name            VARCHAR2(40),
+    NIP                  VARCHAR2(11),
+    Pesel                VARCHAR2(11),
 
-    CONSTRUCTOR FUNCTION Entity(
-        Contract_Start_Date IN DATE,
-        Contract_End_Date IN DATE,
-        Registration_Address IN Address,
-        Phone_Number IN VARCHAR2
+    CONSTRUCTOR FUNCTION ClientObj(
+        Contract_Start_Date in DATE,
+        Contract_End_Date in DATE,
+        Registration_Address in Address,
+        Phone_Number in VARCHAR2,
+        First_Name VARCHAR2,
+        Last_Name VARCHAR2,
+        NIP VARCHAR2,
+        Pesel VARCHAR2
     ) RETURN SELF AS RESULT
-
-) INSTANTIABLE NOT FINAL;
+);
 
 /
 
-CREATE OR REPLACE TYPE BODY Entity AS
-
-    CONSTRUCTOR FUNCTION Entity(
-        Contract_Start_Date IN DATE,
-        Contract_End_Date IN DATE,
-        Registration_Address IN Address,
-        Phone_Number IN VARCHAR2
+CREATE OR REPLACE TYPE BODY ClientObj AS
+    CONSTRUCTOR FUNCTION ClientObj(
+        Contract_Start_Date in DATE,
+        Contract_End_Date in DATE,
+        Registration_Address in Address,
+        Phone_Number in VARCHAR2,
+        First_Name VARCHAR2,
+        Last_Name VARCHAR2,
+        NIP VARCHAR2,
+        Pesel VARCHAR2
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.PersonId := PersonSequence.nextval;
+        SELF.ClientId := ClientSequence.nextval;
         SELF.Contract_Start_Date := Contract_Start_Date;
         SELF.Contract_End_Date := Contract_End_Date;
         SELF.Registration_Address := Registration_Address;
         SELF.Phone_Number := Phone_Number;
-        SELF.Present_Services := ServiceList();
-        SELF.Invoices := InvoiceList();
+        SELF.First_Name := First_Name;
+        SELF.Last_Name := Last_Name;
+        SELF.NIP := NIP;
+        SELF.Pesel := Pesel;
         RETURN;
     END;
-
 END;
 
 /
 
-//------------------------------------COMPANY------------------------------------------------//
+create table ClientsTable Of ClientObj (PRIMARY KEY (ClientId));
 
 
-CREATE OR REPLACE TYPE Company UNDER Entity
+//--------------------------------------INVOICE----------------------------------------------//
+CREATE SEQUENCE InvoiceSequence START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TYPE Invoice AS OBJECT
 (
-    Company_name                      VARCHAR2(150),
-    Tax_identification_number         VARCHAR2(11),
-    National_business_registry_number VARCHAR2(17),
-    CONSTRUCTOR FUNCTION Company(
-        Contract_Start_Date IN DATE,
-        Contract_End_Date IN DATE,
-        Registration_Address IN Address,
-        Phone_number IN VARCHAR2,
-        Company_name IN VARCHAR2,
-        Tax_identification_number IN VARCHAR2,
-        National_business_registry_number IN VARCHAR2,
-        Present_Services IN ServiceList,
-        Invoices IN InvoiceList
+    InvoiceId Number,
+    IssueDate DATE,
+    Cost NUMBER,
+    SingleClient REF ClientObj,
+    CONSTRUCTOR FUNCTION Invoice
+    (
+        IssueDate IN DATE,
+        Cost IN NUMBER,
+        SingleClient in ref ClientObj
     ) RETURN SELF AS RESULT
 );
 
-/
-
-
-
-CREATE OR REPLACE TYPE BODY Company AS
-
-    CONSTRUCTOR FUNCTION Company(
-        Contract_Start_Date IN DATE,
-        Contract_End_Date IN DATE,
-        Registration_Address IN Address,
-        Phone_number IN VARCHAR2,
-        Company_name IN VARCHAR2,
-        Tax_identification_number IN VARCHAR2,
-        National_business_registry_number IN VARCHAR2,
-        Present_Services IN ServiceList,
-        Invoices IN InvoiceList
-    ) RETURN SELF AS RESULT IS
-
-    BEGIN
-        SELF.Company_name := Company_name;
-        SELF.Tax_identification_number := Tax_identification_number;
-        SELF.National_business_registry_number := National_business_registry_number;
-        SELF.Present_Services := Present_Services;
-        SELF.Invoices := Invoices;
-        SELF.Contract_Start_Date := Contract_Start_Date;
-        SELF.Contract_End_Date := Contract_End_Date;
-        SELF.Registration_Address := Registration_Address;
-        SELF.Phone_number := Phone_number;
-        RETURN;
-
-    END;
-
-
-END;
-/
-
-//------------------------------------PRIVATE PERSON------------------------------------------------//
-
-CREATE OR REPLACE TYPE PrivatePerson UNDER Entity
-(
-    First_Name VARCHAR2(20),
-    Last_Name  VARCHAR2(50),
-    Pesel      VARCHAR2(11),
-    CONSTRUCTOR FUNCTION PrivatePerson(
-        Contract_Start_Date IN DATE,
-        Contract_End_Date IN DATE,
-        Registration_Address IN Address,
-        Phone_number IN VARCHAR2,
-        First_Name IN VARCHAR2,
-        Last_Name IN VARCHAR2,
-        Pesel IN VARCHAR2,
-        Present_Services IN ServiceList,
-        Invoices IN InvoiceList
-    ) RETURN SELF AS RESULT
-) INSTANTIABLE NOT FINAL;
-/
-
-CREATE OR REPLACE TYPE BODY PrivatePerson AS
-    CONSTRUCTOR FUNCTION PrivatePerson(
-        Contract_Start_Date IN DATE,
-        Contract_End_Date IN DATE,
-        Registration_Address IN Address,
-        Phone_number IN VARCHAR2,
-        First_Name IN VARCHAR2,
-        Last_Name IN VARCHAR2,
-        Pesel IN VARCHAR2,
-        Present_Services IN ServiceList,
-        Invoices IN InvoiceList
+CREATE OR REPLACE TYPE BODY Invoice AS
+    CONSTRUCTOR FUNCTION Invoice
+    (
+        IssueDate IN DATE,
+        Cost IN NUMBER,
+        SingleClient in ref ClientObj
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.First_Name := First_Name;
-        SELF.Last_Name := Last_Name;
-        SELF.Pesel := Pesel;
-        SELF.Present_Services := Present_Services;
-        SELF.Invoices := Invoices;
-        SELF.Contract_Start_Date := Contract_Start_Date;
-        SELF.Contract_End_Date := Contract_End_Date;
-        SELF.Registration_Address := Registration_Address;
-        SELF.Phone_number := Phone_number;
+        SELF.InvoiceId := InvoiceSequence.nextval;
+        SELF.IssueDate := IssueDate;
+        SELF.Cost := Cost;
+        SELF.SingleClient := SingleClient;
         RETURN;
     END;
 END;
 /
+
+create table InvoiceTables of INVOICE(InvoiceId PRIMARY KEY);
+/
+
+INSERT INTO ServiceTable VALUES (Service('Service1', 50));
+INSERT INTO ServiceTable VALUES (Service('Service2', 75));
+INSERT INTO ServiceTable VALUES (Service('Service3', 100));
+
+INSERT INTO ClientsTable VALUES (ClientObj(SYSDATE, SYSDATE + 365, Address('Street4', 'City4', 'Province4', '98765', 'Country4'), '1234567890', 'John', 'Doe', '12345678901', '98765432101'));
+INSERT INTO ClientsTable VALUES (ClientObj(SYSDATE, SYSDATE + 365, Address('Street5', 'City5', 'Province5', '54321', 'Country5'), '0987654321', 'Jane', 'Smith', '98765432102', '12345678902'));
+
+INSERT INTO InvoiceTables VALUES (Invoice(SYSDATE, 200, (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 1)));
+INSERT INTO InvoiceTables VALUES (Invoice(SYSDATE, 150, (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 15)));
+
+SELECT * FROM ServiceTable;
+SELECT * FROM ClientsTable;
+SELECT * FROM InvoiceTables;
+
+SELECT i.InvoiceId, i.IssueDate, i.Cost,
+       DEREF(i.SingleClient).ClientId as ClientId,
+       DEREF(i.SingleClient).First_Name as Client_First_Name,
+       DEREF(i.SingleClient).Last_Name as Client_Last_Name
+FROM InvoiceTables i;
+
 
 //--------------------------------EMPLOYEE----------------------------------------//
-
-
 CREATE SEQUENCE EmployeeSequence START WITH 1 INCREMENT BY 1;
 
-CREATE OR REPLACE TYPE Employee UNDER PrivatePerson(
-    Salary NUMBER,
-    EmploymentType VARCHAR2(50),
+CREATE OR REPLACE TYPE Employee as OBJECT (
+    EmployeeId           Number,
+    Contract_Start_Date  DATE,
+    Contract_End_Date    DATE,
+    Registration_Address Address,
+    Phone_Number         VARCHAR2(12),
+    First_Name           VARCHAR2(20),
+    Last_Name            VARCHAR2(40),
+    Pesel                VARCHAR2(11),
+    Salary               NUMBER,
+    EmploymentType       VARCHAR2(50),
 
-    CONSTRUCTOR FUNCTION Employee
-    (
+    CONSTRUCTOR FUNCTION Employee (
         Contract_Start_Date IN DATE,
         Contract_End_Date IN DATE,
         Registration_Address IN Address,
@@ -279,8 +221,7 @@ CREATE OR REPLACE TYPE Employee UNDER PrivatePerson(
 /
 CREATE OR REPLACE TYPE BODY Employee AS
 
-    CONSTRUCTOR FUNCTION Employee
-    (
+    CONSTRUCTOR FUNCTION Employee(
         Contract_Start_Date IN DATE,
         Contract_End_Date IN DATE,
         Registration_Address IN Address,
@@ -292,7 +233,7 @@ CREATE OR REPLACE TYPE BODY Employee AS
         EmploymentType IN VARCHAR2
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.PERSONID := EmployeeSequence.nextval;
+        SELF.EMPLOYEEID := EMPLOYEESEQUENCE.nextval;
         SELF.Contract_Start_Date := Contract_Start_Date;
         SELF.Contract_End_Date := Contract_End_Date;
         SELF.Registration_Address := Registration_Address;
@@ -300,8 +241,6 @@ CREATE OR REPLACE TYPE BODY Employee AS
         SELF.First_Name := First_Name;
         SELF.Last_Name := Last_Name;
         SELF.Pesel := Pesel;
-        SELF.Present_Services := ServiceList();
-        SELF.Invoices := InvoiceList();
         SELF.Salary := Salary;
         SELF.EmploymentType := EmploymentType;
 
@@ -311,48 +250,81 @@ CREATE OR REPLACE TYPE BODY Employee AS
 END;
 /
 
-CREATE OR REPLACE TYPE Employee_List AS VARRAY(15) OF Employee;
+create table EmployeesTable of Employee (EmployeeId PRIMARY KEY );
 
 
+//---------------------------ORDER----------------------------//
+CREATE SEQUENCE OrderSequence START WITH 1 INCREMENT BY 1;
 
-CREATE TABLE EmployeesTable OF Employee (PRIMARY KEY (PersonId))
-nested table Present_Services store as services;
+CREATE OR REPLACE TYPE ClientOrder AS OBJECT (
+    OrderId NUMBER,
+    SingleClient REF ClientObj,
+    SingleService REF SERVICE,
+    SingleEmployee REF EMPLOYEE,
+    OrderDate DATE,
 
+    CONSTRUCTOR FUNCTION ClientOrder(
+        SingleClient IN REF ClientObj,
+        SingleService IN REF SERVICE,
+        SingleEmployee IN REF EMPLOYEE,
+        OrderDate IN DATE
+    ) RETURN SELF AS RESULT
+);
 /
 
+CREATE OR REPLACE TYPE BODY ClientOrder AS
+    CONSTRUCTOR FUNCTION ClientOrder(
+        SingleClient in REF ClientObj,
+        SingleService in REF SERVICE,
+        SingleEmployee in REF EMPLOYEE,
+        OrderDate in Date
+    ) RETURN SELF AS RESULT IS
+    BEGIN
+        SELF.OrderId := OrderSequence.nextval;
+        SELF.SingleClient := SingleClient;
+        SELF.SingleService := SingleService;
+        SELF.SingleEmployee := SingleEmployee;
+        SELF.OrderDate := OrderDate;
+        RETURN;
+    END;
+END;
+/
+
+Create table ClientsOrdersTable of CLIENTORDER (OrderId PRIMARY KEY );
+/
 
 //--------------------------------BRANCH----------------------------------------------------//
+Create type EmployeeList as table of Employee;
 /
-
 CREATE SEQUENCE BranchSequence START WITH 1 INCREMENT BY 1;
-
+/
 CREATE OR REPLACE TYPE Branch AS OBJECT (
     BranchId Number,
     Branch_address Address,
-    Employees Employee_List,
+    Employees EmployeeList,
     MEMBER PROCEDURE AddEmployee(employee2 IN Employee),
-
     CONSTRUCTOR FUNCTION Branch(
-        Branch_address IN Address
+        Branch_address IN Address,
+        Employees IN EmployeeList
     ) RETURN SELF AS RESULT
-
 );
-
 /
-
 
 CREATE OR REPLACE TYPE BODY Branch AS
     CONSTRUCTOR FUNCTION Branch(
-        Branch_address IN Address
+
+        Branch_address IN Address,
+        Employees IN EmployeeList
+
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.BranchId := BranchSequence.nextval;
+        SELF.BRANCHID := BranchSequence.nextval;
         SELF.Branch_address := Branch_address;
-        SELF.Employees := Employee_List();
+        SELF.Employees := Employees;
         RETURN;
     END;
 
-     MEMBER PROCEDURE AddEmployee(employee2 IN Employee) IS
+    MEMBER PROCEDURE AddEmployee(employee2 IN Employee) IS
         EMPLOYEE_EXIST_EXCEPTION EXCEPTION;
         emp EMPLOYEE;
     BEGIN
@@ -383,58 +355,88 @@ CREATE OR REPLACE TYPE BODY Branch AS
 END;
 /
 
-CREATE TABLE BranchTable OF Branch (PRIMARY KEY (BranchId));
+create table BranchTable of Branch (BranchId PRIMARY KEY )
+nested table Employees store as EmployeeListTable_nested;
 /
 
+-- Dodaj kilka pracowników
+INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street6', 'City6', 'Province6', '11111', 'Country6'), '1111111111', 'John', 'Smith', '11111111111', 5000, 'Full Time'));
+INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street7', 'City7', 'Province7', '22222', 'Country7'), '2222222222', 'Jane', 'Doe', '22222222222', 6000, 'Part Time'));
 
-//-------------------------------------ADDING EMPLOYEES------------------------------------//
--- SET SERVEROUTPUT ON;
-/
+-- Dodaj kilka oddziałów
+INSERT INTO BranchTable VALUES (
+    Branch(
+        Address('Street8', 'City8', 'Province8', '33333', 'Country8'),
+        EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3333333333', 'Alice', 'Johnson', '33333333333', 7000, 'Full Time')))
+);
 
-DECLARE
-    branch1 Branch;
-    employee1 Employee;
-BEGIN
---     SELECT VALUE(e) INTO employee1
---     FROM EmployeesTable e
---     WHERE ROWNUM <= 1;
-     employee1 := Employee(
-        SYSDATE, -- Contract_Start_Date
-        SYSDATE + 365, -- Contract_End_Date
-        Address('EmployeeAddress', 'City', 'Country', '123', '123'), -- Registration_Address
-        '123-456-7890', -- Phone_number
-        'John', -- First_Name
-        'Doe', -- Last_Name
-        '12345678902', -- Pesel
-        5000, -- Salary
-        'Full Time' -- EmploymentType
-    );
+INSERT INTO BranchTable VALUES (
+    Branch(
+        Address('Street10', 'City10', 'Province10', '55555', 'Country10'),
+        EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street11', 'City11', 'Province11', '66666', 'Country11'), '4444444444', 'Bob', 'Miller', '44444444444', 8000, 'Part Time'))
+    )
+);
+
+-- Dodaj kilka zamówień
+INSERT INTO ClientsOrdersTable VALUES (
+    ClientOrder(
+        (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 1),
+        (SELECT REF(s) FROM ServiceTable s WHERE s.ServiceId = 1),
+        (SELECT REF(e) FROM EmployeesTable e WHERE e.EmployeeId = 1),
+        SYSDATE
+    )
+);
+
+INSERT INTO ClientsOrdersTable VALUES (
+    ClientOrder(
+        (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 2),
+        (SELECT REF(s) FROM ServiceTable s WHERE s.ServiceId = 2),
+        (SELECT REF(e) FROM EmployeesTable e WHERE e.EmployeeId = 2),
+        SYSDATE + 1
+    )
+);
+
+-- Wyświetl zawartość tabel
+SELECT * FROM ServiceTable;
+SELECT * FROM ClientsTable;
+SELECT * FROM InvoiceTables;
+SELECT * FROM EmployeesTable;
+SELECT * FROM ClientsOrdersTable;
+
+SELECT
+    o.OrderId,
+    DEREF(o.SingleClient).ClientId AS ClientId,
+    DEREF(o.SingleClient).Contract_Start_Date AS Client_Contract_Start_Date,
+    DEREF(o.SingleClient).Contract_End_Date AS Client_Contract_End_Date,
+    DEREF(o.SingleClient).Registration_Address.Street AS Client_Street,
+    DEREF(o.SingleClient).Registration_Address.City AS Client_City,
+    DEREF(o.SingleClient).Registration_Address.Province AS Client_Province,
+    DEREF(o.SingleClient).Registration_Address.Postal_Code AS Client_Postal_Code,
+    DEREF(o.SingleClient).Registration_Address.Country AS Client_Country,
+    DEREF(o.SingleClient).Phone_Number AS Client_Phone_Number,
+    DEREF(o.SingleClient).First_Name AS Client_First_Name,
+    DEREF(o.SingleClient).Last_Name AS Client_Last_Name,
+    DEREF(o.SingleClient).NIP AS Client_NIP,
+    DEREF(o.SingleClient).Pesel AS Client_Pesel,
+    o.SingleService.ServiceId AS ServiceId,
+    o.SingleService.Description AS Service_Description,
+    o.SingleService.Price AS Service_Price,
+    DEREF(o.SingleEmployee).EmployeeId AS EmployeeId,
+    DEREF(o.SingleEmployee).Contract_Start_Date AS Employee_Contract_Start_Date,
+    DEREF(o.SingleEmployee).Contract_End_Date AS Employee_Contract_End_Date,
+    DEREF(o.SingleEmployee).Registration_Address.Street AS Employee_Street,
+    DEREF(o.SingleEmployee).Registration_Address.City AS Employee_City,
+    DEREF(o.SingleEmployee).Registration_Address.Province AS Employee_Province,
+    DEREF(o.SingleEmployee).Registration_Address.Postal_Code AS Employee_Postal_Code,
+    DEREF(o.SingleEmployee).Registration_Address.Country AS Employee_Country,
+    DEREF(o.SingleEmployee).Phone_Number AS Employee_Phone_Number,
+    DEREF(o.SingleEmployee).First_Name AS Employee_First_Name,
+    DEREF(o.SingleEmployee).Last_Name AS Employee_Last_Name,
+    DEREF(o.SingleEmployee).Pesel AS Employee_Pesel,
+    DEREF(o.SingleEmployee).Salary AS Employee_Salary,
+    DEREF(o.SingleEmployee).EmploymentType AS Employee_EmploymentType,
+    o.OrderDate
+FROM ClientsOrdersTable o;
 
 
-    branch1 := Branch(Address('BranchAddress', 'City', 'Country', '123', '123'));
-
-    branch1.AddEmployee(employee1);
---
-    INSERT INTO BranchTable VALUES (branch1);
-
-    COMMIT;
-END;
-/
-
-declare
-    abc Employee_List := Employee_List();
-Begin
-    SELECT VALUE(e) BULK COLLECT into abc
-    FROM BranchTable bt,
-         TABLE(bt.Employees) e;
-
-
-    for i in 1..abc.Count loop
-        DBMS_OUTPUT.PUT_LINE(abc(i).PESEL);
-    end loop;
-
-end;
-
---todo: operatorzy, tabela operatorów,
-
-
+SELECT * FROM BranchTable;

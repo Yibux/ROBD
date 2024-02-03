@@ -12,18 +12,18 @@ CREATE OR REPLACE TYPE ClientObj AS OBJECT
     First_Name           VARCHAR(20),
     Last_Name            VARCHAR(40),
     NIP                  VARCHAR(11),
-    Invoices             InvoiceList,
+    Pesel                VARCHAR2(11),
 
     CONSTRUCTOR FUNCTION ClientObj(
-        p_PersonId NUMBER,
-        p_Contract_Start_Date DATE,
-        p_Contract_End_Date DATE,
-        p_Registration_Address Address,
-        p_Phone_Number VARCHAR(12),
-        p_First_Name VARCHAR(20),
-        p_Last_Name VARCHAR(40),
-        p_NIP VARCHAR(11),
-        p_Invoices InvoiceList
+        PersonId NUMBER,
+        Contract_Start_Date DATE,
+        Contract_End_Date DATE,
+        Registration_Address Address,
+        Phone_Number VARCHAR(12),
+        First_Name VARCHAR(20),
+        Last_Name VARCHAR(40),
+        NIP VARCHAR(11),
+        Pesel VARCHAR2(11)
     ) RETURN SELF AS RESULT
 );
 
@@ -31,25 +31,25 @@ CREATE OR REPLACE TYPE ClientObj AS OBJECT
 
 CREATE OR REPLACE TYPE BODY ClientObj AS
     CONSTRUCTOR FUNCTION ClientObj(
-        p_Contract_Start_Date DATE,
-        p_Contract_End_Date DATE,
-        p_Registration_Address Address,
-        p_Phone_Number VARCHAR(12),
-        p_First_Name VARCHAR(20),
-        p_Last_Name VARCHAR(40),
-        p_NIP VARCHAR(11),
-        p_Invoices InvoiceList
+        Contract_Start_Date DATE,
+        Contract_End_Date DATE,
+        Registration_Address Address,
+        Phone_Number VARCHAR(12),
+        First_Name VARCHAR(20),
+        Last_Name VARCHAR(40),
+        NIP VARCHAR(11),
+        Pesel VARCHAR2(11)
     ) RETURN SELF AS RESULT IS
     BEGIN
         SELF.PersonId := PersonSequence.nextval;
-        SELF.Contract_Start_Date := p_Contract_Start_Date;
-        SELF.Contract_End_Date := p_Contract_End_Date;
-        SELF.Registration_Address := p_Registration_Address;
-        SELF.Phone_Number := p_Phone_Number;
-        SELF.First_Name := p_First_Name;
-        SELF.Last_Name := p_Last_Name;
-        SELF.NIP := p_NIP;
-        SELF.Invoices := p_Invoices;
+        SELF.Contract_Start_Date := Contract_Start_Date;
+        SELF.Contract_End_Date := Contract_End_Date;
+        SELF.Registration_Address := Registration_Address;
+        SELF.Phone_Number := Phone_Number;
+        SELF.First_Name := First_Name;
+        SELF.Last_Name := Last_Name;
+        SELF.NIP := NIP;
+        SELF.Pesel := Pesel;
         RETURN;
     END;
 END;

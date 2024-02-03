@@ -1,7 +1,9 @@
 //--------------------------------SERVICE----------------------------------------------------//
+CREATE SEQUENCE ServiceSequence START WITH 1 INCREMENT BY 1;
 
 CREATE OR REPLACE TYPE Service AS OBJECT
 (
+    ServiceId Number,
     Description VARCHAR2(100),
     Price NUMBER,
     CONSTRUCTOR FUNCTION Service
@@ -20,6 +22,7 @@ CREATE OR REPLACE TYPE BODY Service AS
         Price IN NUMBER
     ) RETURN SELF AS RESULT IS
     BEGIN
+        SELF.ServiceId := ServiceSequence.nextval;
         SELF.Description := Description;
         SELF.Price := Price;
         RETURN;

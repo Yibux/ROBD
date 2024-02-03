@@ -7,9 +7,19 @@ drop type branch;
 drop sequence BRANCHSEQUENCE;
 /
 
-DROP TABLE EMPLOYEESTABLE;
+drop type EmployeeList;
 /
-drop type Employee_List;
+
+drop table ClientsOrdersTable;
+/
+
+drop type CLIENTORDER;
+/
+
+drop sequence ORDERSEQUENCE;
+/
+
+drop table EMPLOYEESTABLE;
 /
 
 drop type Employee;
@@ -18,23 +28,31 @@ drop type Employee;
 drop sequence EmployeeSequence;
 /
 
-DROP type PrivatePerson;
-/
-
-drop type Company;
-/
-
-drop type Entity;
-/
-
-drop sequence PERSONSEQUENCE;
-/
-
-drop type INVOICELIST;
+drop table INVOICETABLES;
 /
 
 drop type INVOICE;
 /
 
-drop type ServiceList;
+drop sequence InvoiceSequence;
 /
+
+drop table ClientsTable;
+/
+
+drop type ClientObj;
+/
+
+drop sequence ClientSequence;
+/
+
+drop type ADDRESS;
+/
+
+drop table SERVICETABLE;
+/
+
+drop type SERVICE;
+/
+
+drop sequence ServiceSequence;
