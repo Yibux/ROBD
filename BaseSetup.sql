@@ -440,3 +440,5 @@ FROM ClientsOrdersTable o;
 
 
 SELECT * FROM BranchTable;
+
+--todo: package, generowanie faktur, dodawanie pracowników, show ordersbyemp/client, getclientbypesel
