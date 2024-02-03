@@ -97,15 +97,14 @@ CREATE OR REPLACE TYPE BODY Invoice AS
 END;
 /
 
-CREATE OR REPLACE TYPE InvoiceList AS VARRAY(12) OF Invoice;
--- CREATE OR REPLACE TYPE InvoiceList AS TABLE OF Invoice;
+CREATE OR REPLACE TYPE InvoiceList AS VARRAY(24) OF Invoice;
 /
 
 //------------------------------------ENTITY------------------------------------------------//
 
 CREATE SEQUENCE PersonSequence START WITH 1 INCREMENT BY 1;
 
-CREATE OR REPLACE TYPE Entity AS OBJECT
+CREATE OR REPLACE TYPE ClientObj AS OBJECT
 (
     PersonId             Number,
     Contract_Start_Date  DATE,
