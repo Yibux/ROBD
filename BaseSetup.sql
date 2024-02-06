@@ -359,11 +359,9 @@ create table BranchTable of Branch (BranchId PRIMARY KEY )
 nested table Employees store as EmployeeListTable_nested;
 /
 
--- Dodaj kilka pracowników
 INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street6', 'City6', 'Province6', '11111', 'Country6'), '1111111111', 'John', 'Smith', '11111111111', 5000, 'Full Time'));
 INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street7', 'City7', 'Province7', '22222', 'Country7'), '2222222222', 'Jane', 'Doe', '22222222222', 6000, 'Part Time'));
 
--- Dodaj kilka oddziałów
 INSERT INTO BranchTable VALUES (
     Branch(
         Address('Street8', 'City8', 'Province8', '33333', 'Country8'),
@@ -396,7 +394,6 @@ INSERT INTO ClientsOrdersTable VALUES (
     )
 );
 
--- Wyświetl zawartość tabel
 SELECT * FROM ServiceTable;
 SELECT * FROM ClientsTable;
 SELECT * FROM InvoiceTables;
