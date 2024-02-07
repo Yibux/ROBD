@@ -19,6 +19,9 @@ drop type CLIENTORDER;
 drop sequence ORDERSEQUENCE;
 /
 
+drop package EMPLOYEEPACKAGE;
+/
+
 drop table EMPLOYEESTABLE;
 /
 
