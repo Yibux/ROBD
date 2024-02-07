@@ -1,6 +1,3 @@
-drop package OrderPackage;
-/
-
 CREATE OR REPLACE PACKAGE OrderPackage AS
 
     PROCEDURE ShowOrdersByClient(ClientId IN NUMBER);
