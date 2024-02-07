@@ -113,7 +113,24 @@ EXCEPTION
 END;
 /
 
+//------------------------------------TEST TRIGGERA-----------------------------------//
+DECLARE
+    empToAdd EMPLOYEE := Employee(SYSDATE + 367, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
+                 'John', 'Johnson', '12333335173', 7000, 'Full Time');
+    takenBranchId NUMBER;
+BEGIN
+    SELECT BranchId
+    INTO takenBranchId
+    FROM BRANCHTABLE
+    WHERE ROWNUM <= 1;
+    EmployeePackage.AddEmployeeToBranch(empToAdd, takenBranchId);
 
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
 
 
 select *
