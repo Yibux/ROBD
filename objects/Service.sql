@@ -28,4 +28,7 @@ CREATE OR REPLACE TYPE BODY Service AS
         RETURN;
     END;
 END;
+
 /
+create table ServiceTable of Service (PRIMARY KEY (ServiceId));
+

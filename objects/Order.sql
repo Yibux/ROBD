@@ -17,7 +17,8 @@ CREATE OR REPLACE TYPE ClientOrder AS OBJECT (
         SingleService IN REF SERVICE,
         SingleEmployee IN REF EMPLOYEE,
         OrderDate IN DATE
-    ) RETURN SELF AS RESULT
+    ) RETURN SELF AS RESULT,
+    MEMBER PROCEDURE CloseOrder
 );
 /
 
@@ -36,6 +37,11 @@ CREATE OR REPLACE TYPE BODY ClientOrder AS
         SELF.OrderDate := OrderDate;
         SELF.CLOSEORDERDATE := null;
         RETURN;
+    END;
+
+    MEMBER PROCEDURE CloseOrder IS
+    BEGIN
+        SELF.CloseOrderDate := SYSDATE;
     END;
 END;
 /
