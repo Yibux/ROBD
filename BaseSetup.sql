@@ -377,9 +377,6 @@ INSERT INTO BranchTable VALUES (
 );
 
 
-
-
--- Dodaj kilka zamówień
 INSERT INTO ClientsOrdersTable VALUES (
     ClientOrder(
         (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 29),
