@@ -129,7 +129,7 @@ END;
 
 /
 
-create table ClientsTable Of ClientObj (PRIMARY KEY (ClientId));
+create table ClientsTable Of ClientObj (PRIMARY KEY (PersonId));
 
 
 //--------------------------------------INVOICE----------------------------------------------//
@@ -182,6 +182,7 @@ INSERT INTO InvoiceTables VALUES (Invoice(SYSDATE, 150, (SELECT REF(c) FROM Clie
 SELECT * FROM ServiceTable;
 SELECT * FROM ClientsTable;
 SELECT * FROM InvoiceTables;
+
 
 SELECT i.InvoiceId, i.IssueDate, i.Cost,
        DEREF(i.SingleClient).ClientId as ClientId,
@@ -375,10 +376,13 @@ INSERT INTO BranchTable VALUES (
     )
 );
 
+
+
+
 -- Dodaj kilka zamówień
 INSERT INTO ClientsOrdersTable VALUES (
     ClientOrder(
-        (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 1),
+        (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 29),
         (SELECT REF(s) FROM ServiceTable s WHERE s.ServiceId = 1),
         (SELECT REF(e) FROM EmployeesTable e WHERE e.EmployeeId = 1),
         SYSDATE

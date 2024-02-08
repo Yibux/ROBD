@@ -6,12 +6,12 @@ CREATE OR REPLACE TYPE Invoice AS OBJECT
     InvoiceId Number,
     IssueDate DATE,
     Cost NUMBER,
-    SingleClient REF ClientObj
+    SingleClient REF ClientObj,
     CONSTRUCTOR FUNCTION Invoice
     (
         IssueDate IN DATE,
         Cost IN NUMBER,
-        SingleClient in ClientObj
+        SingleClient IN REF ClientObj
     ) RETURN SELF AS RESULT
 );
 
@@ -20,7 +20,7 @@ CREATE OR REPLACE TYPE BODY Invoice AS
     (
         IssueDate IN DATE,
         Cost IN NUMBER,
-        SingleClient in ClientObj
+        SingleClient IN REF ClientObj
     ) RETURN SELF AS RESULT IS
     BEGIN
         SELF.InvoiceId := InvoiceSequence.nextval;
@@ -30,5 +30,7 @@ CREATE OR REPLACE TYPE BODY Invoice AS
         RETURN;
     END;
 END;
+/
 
+create table InvoiceTables of INVOICE(InvoiceId PRIMARY KEY);
 /
