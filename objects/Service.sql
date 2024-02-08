@@ -1,5 +1,6 @@
 //--------------------------------SERVICE----------------------------------------------------//
 CREATE SEQUENCE ServiceSequence START WITH 1 INCREMENT BY 1;
+/
 
 CREATE OR REPLACE TYPE Service AS OBJECT
 (
@@ -12,7 +13,6 @@ CREATE OR REPLACE TYPE Service AS OBJECT
         Price IN NUMBER
     ) RETURN SELF AS RESULT
 );
-
 /
 
 CREATE OR REPLACE TYPE BODY Service AS
@@ -28,5 +28,4 @@ CREATE OR REPLACE TYPE BODY Service AS
         RETURN;
     END;
 END;
-
 /
