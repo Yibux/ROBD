@@ -30,3 +30,4 @@ CREATE OR REPLACE TYPE BODY Service AS
 END;
 
 /
+create table ServiceTable of Service (PRIMARY KEY (ServiceId));
