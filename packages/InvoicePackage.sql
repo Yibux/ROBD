@@ -3,7 +3,8 @@ drop package InvoicePackage;
 
 CREATE OR REPLACE PACKAGE InvoicePackage AS
 
-    PROCEDURE GenerateInvoice(OrderId IN NUMBER);
+    PROCEDURE GenerateInvoice(ClientID IN NUMBER);
+--     PROCEDURE ShowServices(InvoiceID IN NUMBER);
 
 END InvoicePackage;
 /
@@ -11,22 +12,38 @@ END InvoicePackage;
 
 CREATE OR REPLACE PACKAGE BODY InvoicePackage AS
 
-    PROCEDURE GenerateInvoice(OrderId IN NUMBER) IS
-        v_ClientId NUMBER;
-        v_Cost NUMBER;
-    BEGIN
-        -- Pobierz klienta i koszt zamówienia
-        SELECT DEREF(SingleClient).ClientId, DEREF(SingleService).Price
-        INTO v_ClientId, v_Cost
-        FROM ClientsOrdersTable
-        WHERE OrderId = GenerateInvoice.OrderId;
+    PROCEDURE GenerateInvoice(ClientID IN NUMBER) IS
+            cost NUMBER;
+            client_ref REF ClientObj;
+        BEGIN
+            SELECT SUM(DEREF(z.SingleService).Price)  into cost
+            FROM ClientsOrdersTable z
+            WHERE DEREF(z.SingleClient).CLIENTID = ClientID AND CLOSEORDERDATE is null AND OrderDate < SYSDATE;
 
-        -- Wstaw fakturę do tabeli faktur
-        INSERT INTO InvoiceTables (InvoiceId, IssueDate, Cost, SingleClient)
-        VALUES (InvoiceSequence.nextval, SYSDATE, v_Cost, (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = v_ClientId));
+            SELECT REF(c) INTO client_ref FROM ClientsTable c WHERE CLIENTID = ClientID;
 
-        COMMIT;
+            Insert into INVOICETABLES values(INVOICE(SYSDATE,cost,client_ref));
     END GenerateInvoice;
+
+--         PROCEDURE ShowServices(InvoiceID IN NUMBER) IS
+--             CURSOR c_orders IS
+--             SELECT DEREF(z.SingleService).Description, DEREF(z.SingleService).Price
+--             FROM ClientsOrdersTable z
+--             WHERE DEREF(z.SingleClient).CLIENTID = InvoiceID AND CLOSEORDERDATE is null AND OrderDate < SYSDATE;
+--
+--             v_description VARCHAR2(1000);
+--             v_price NUMBER;
+--         BEGIN
+--             OPEN c_orders;
+--
+--             LOOP
+--                 FETCH c_orders INTO v_description, v_price;
+--                 EXIT WHEN c_orders%NOTFOUND;
+--                 DBMS_OUTPUT.PUT_LINE('Opis: ' || v_description || ', Cena: ' || v_price);
+--             END LOOP;
+--
+--             CLOSE c_orders;
+--     END ShowServices;
 
 END InvoicePackage;
 /

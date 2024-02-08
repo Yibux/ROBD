@@ -7,6 +7,7 @@ CREATE OR REPLACE TYPE ClientOrder AS OBJECT (
     SingleService REF SERVICE,
     SingleEmployee REF EMPLOYEE,
     OrderDate DATE,
+    CloseOrderDate DATE,
 
     CONSTRUCTOR FUNCTION ClientOrder(
         SingleClient IN REF ClientObj,
@@ -30,6 +31,7 @@ CREATE OR REPLACE TYPE BODY ClientOrder AS
         SELF.SingleService := SingleService;
         SELF.SingleEmployee := SingleEmployee;
         SELF.OrderDate := OrderDate;
+        SELF.CLOSEORDERDATE := null;
         RETURN;
     END;
 END;
