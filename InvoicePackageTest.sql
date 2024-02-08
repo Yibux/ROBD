@@ -1,3 +1,13 @@
+insert into SYSTEM.CLIENTSTABLE
+    values ClientObj(SYSDATE, SYSDATE + 365,
+    Address('Street7', 'City7', 'Province7', '22222', 'Country7'),
+    '2222222222', 'Jan', 'Kowalski', null, '80122838428');
+
+insert into SYSTEM.CLIENTSTABLE
+    values ClientObj(SYSDATE, SYSDATE + 365,
+    Address('Street7', 'City7', 'Province7', '22222', 'Country7'),
+    '2222222222', 'Jan', 'Kowalski', null, '91111795378');
+
 DECLARE
     userID NUMBER;
     setDate Date;

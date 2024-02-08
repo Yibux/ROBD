@@ -7,10 +7,8 @@ CREATE OR REPLACE TYPE Branch AS OBJECT (
     BranchId Number,
     Branch_address Address,
     Employees EmployeeList,
-    MEMBER PROCEDURE AddEmployee(employee2 IN Employee),
     CONSTRUCTOR FUNCTION Branch(
-        Branch_address IN Address,
-        Employees IN EmployeeList
+        Branch_address IN Address
     ) RETURN SELF AS RESULT
 );
 
@@ -18,14 +16,14 @@ CREATE OR REPLACE TYPE Branch AS OBJECT (
 CREATE OR REPLACE TYPE BODY Branch AS
     CONSTRUCTOR FUNCTION Branch(
 
-        Branch_address IN Address,
-        Employees IN EmployeeList
+        Branch_address IN Address
 
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.BRANCHID = BranchSequence.nextval;
+        SELF.BRANCHID := BranchSequence.nextval;
         SELF.Branch_address := Branch_address;
-        SELF.Employees := Employees;
+        SELF.Employees := EmployeeList();
         RETURN;
     END;
 END;
+/

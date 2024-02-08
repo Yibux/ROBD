@@ -1,5 +1,3 @@
-DROP PACKAGE EMPLOYEEPACKAGE;
-/
 CREATE OR REPLACE PACKAGE EmployeePackage AS
 
     PROCEDURE AddEmployeeToBranch(
@@ -19,7 +17,6 @@ CREATE OR REPLACE PACKAGE EmployeePackage AS
 END EmployeePackage;
 /
 
-drop package EmployeePackage;
 
 CREATE OR REPLACE PACKAGE BODY EmployeePackage AS
 
@@ -56,7 +53,9 @@ CREATE OR REPLACE PACKAGE BODY EmployeePackage AS
         WHERE b.BranchId = idForBranch;
 
         COMMIT;
-        DBMS_OUTPUT.PUT_LINE('Employee added successfully');
+        DBMS_OUTPUT.PUT_LINE(
+                'Employee with ID: ' || employeeToAdd.EMPLOYEEID || ', name: ' || employeeToAdd.FIRST_NAME || ' ' || employeeToAdd.LAST_NAME || 'added successfully'
+        );
         EXCEPTION
             WHEN EMPLOYEE_EXIST_EXCEPTION THEN
                 RAISE_APPLICATION_ERROR(-20005, 'Employee exists');

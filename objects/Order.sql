@@ -1,4 +1,7 @@
 //---------------------------ORDER----------------------------//
+drop type CLIENTORDER;
+/
+
 CREATE SEQUENCE OrderSequence START WITH 1 INCREMENT BY 1;
 
 CREATE OR REPLACE TYPE ClientOrder AS OBJECT (

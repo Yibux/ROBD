@@ -2,10 +2,13 @@ drop package ClientPackage;
 /
 
 CREATE OR REPLACE PACKAGE ClientPackage AS
+
    PROCEDURE GetClientByPesel(Pesel IN VARCHAR2);
    PROCEDURE GetActiveServices(p_PersonID IN NUMBER);
+
 END ClientPackage;
 /
+
 CREATE OR REPLACE PACKAGE BODY ClientPackage AS
 
     PROCEDURE GetClientByPesel(Pesel IN VARCHAR2) IS
@@ -17,6 +20,7 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
 
         DBMS_OUTPUT.PUT_LINE('Client Id: ' || v_ClientId);
     END GetClientByPesel;
+
 
 
 
