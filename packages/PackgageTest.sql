@@ -1,36 +1,19 @@
-INSERT INTO BranchTable
-VALUES (Branch(
-        Address('Street8', 'City8', 'Province8', '33333', 'Country8'),
-        EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'),
-                              '3333333333',
-                              'Alice', 'Johnson', '33333333333', 7000, 'Full Time'))));
-
-INSERT INTO EMPLOYEESTABLE
-VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-                 'John', 'Johnson', '33333333333', 7000, 'Full Time'));
-
-//-------------------------------------ERROR EMPLOYEE EXISTS-----------------------------------------//
+//------------------------------ADD BRANCH------------------------//
 DECLARE
-    empToAdd EMPLOYEE := Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-                 'John', 'Johnson', '33333333333', 7000, 'Full Time');
-    takenBranchId NUMBER;
+    addresstToAdd ADDRESS := Address('Street9', 'City9', 'Province9', '44444', 'Country9');
 BEGIN
-    SELECT BranchId
-    INTO takenBranchId
-    FROM BRANCHTABLE
-    WHERE ROWNUM <= 1;
-    EmployeePackage.AddEmployeeToBranch(empToAdd, takenBranchId);
-    DBMS_OUTPUT.PUT_LINE('Employee added successfully');
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+    BranchPackage.ADDBRANCH(addresstToAdd);
 END;
 /
+
+select * from BRANCHTABLE;
+
+
 
 //-------------------------------------ADDING EMPLOYEE-----------------------------------------//
 DECLARE
     empToAdd EMPLOYEE := Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-                 'John', 'Johnson', '12333335873', 7000, 'Full Time');
+                 'John', 'Johnson', '12333333873', 7000, 'Full Time');
     takenBranchId NUMBER;
 BEGIN
     SELECT BranchId
@@ -45,6 +28,25 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
 /
+
+//-------------------------------------ERROR EMPLOYEE EXISTS-----------------------------------------//
+DECLARE
+    empToAdd EMPLOYEE := Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
+                 'John', 'Johnson', '12333333873', 7000, 'Full Time');
+    takenBranchId NUMBER;
+BEGIN
+    SELECT BranchId
+    INTO takenBranchId
+    FROM BRANCHTABLE
+    WHERE ROWNUM <= 1;
+    EmployeePackage.AddEmployeeToBranch(empToAdd, takenBranchId);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+
+
 
 //-------------------------------------CHECK IF EMPLOYEE KEEPS WORKING-----------------------------------------//
 DECLARE
