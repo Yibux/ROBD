@@ -74,7 +74,7 @@ END;
 
 //------------------------------------Client------------------------------------------------//
 
-CREATE SEQUENCE PeronSequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE PersonSequence START WITH 1 INCREMENT BY 1;
 
 CREATE OR REPLACE TYPE ClientObj AS OBJECT
 (
