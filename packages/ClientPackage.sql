@@ -30,7 +30,7 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
             RAISE CLIENT_EXISTS_EXCEPTION;
         end if;
 
-        INSERT INTO EMPLOYEESTABLE VALUES clientToAdd;
+        INSERT INTO CLIENTSTABLE VALUES clientToAdd;
         COMMIT;
         DBMS_OUTPUT.PUT_LINE(
                 'Client with ID: ' || clientToAdd.PERSONID || ', name: ' || clientToAdd.FIRST_NAME || ' ' || clientToAdd.LAST_NAME || 'added successfully'
