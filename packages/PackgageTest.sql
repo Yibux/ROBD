@@ -115,7 +115,7 @@ EXCEPTION
 END;
 /
 
-//------------------------------------TEST TRIGGERA-----------------------------------//
+//------------------------------------TEST TRIGGERA EMPLOYEE DATY-----------------------------------//
 DECLARE
     empToAdd EMPLOYEE := Employee(SYSDATE + 367, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
                  'John', 'Johnson', '12333335173', 7000, 'Full Time');
@@ -126,6 +126,48 @@ BEGIN
     FROM BRANCHTABLE
     WHERE ROWNUM <= 1;
     EmployeePackage.AddEmployeeToBranch(empToAdd, takenBranchId);
+
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+
+//------------------------------------TEST ADDING CLIENTS-----------------------------------//
+DECLARE
+    cliToAdd CLIENTOBJ := CLIENTOBJ(SYSDATE, SYSDATE + 365,
+        Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
+        'Pani', 'Halina', null, '53021148691');
+
+    companyToAdd CLIENTOBJ := CLIENTOBJ(SYSDATE, SYSDATE + 365,
+        Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
+        'KARTOFEL', 'SP. Z O. O.', '5302114691', null);
+BEGIN
+--     CLIENTPACKAGE.ADDPERSONCLIENT(cliToAdd);
+
+    CLIENTPACKAGE.ADDCOMPANYCLIENT(companyToAdd);
+
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+
+//------------------------------------Client trigger-----------------------------------//
+DECLARE
+    cliToAdd CLIENTOBJ := CLIENTOBJ(SYSDATE, SYSDATE + 365,
+        Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
+        'Pani', 'Halina', null, null);
+
+    companyToAdd CLIENTOBJ := CLIENTOBJ(SYSDATE, SYSDATE + 365,
+        Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
+        'KARTOFEL', 'SP. Z O. O.', '5302114691', '53021146912');
+BEGIN
+--     CLIENTPACKAGE.ADDPERSONCLIENT(cliToAdd);
+
+    CLIENTPACKAGE.ADDCOMPANYCLIENT(companyToAdd);
 
 
 EXCEPTION

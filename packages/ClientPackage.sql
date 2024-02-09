@@ -49,6 +49,9 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
             SELECT VALUE(c) INTO cli
             FROM CLIENTSTABLE c
             WHERE c.NIP = clientToAdd.NIP and ROWNUM <= 1;
+
+            DBMS_OUTPUT.PUT_LINE(cli.NIP);
+
         EXCEPTION
         WHEN NO_DATA_FOUND THEN
             cli := NULL;
@@ -58,7 +61,7 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
             RAISE CLIENT_EXISTS_EXCEPTION;
         end if;
 
-        INSERT INTO EMPLOYEESTABLE VALUES clientToAdd;
+        INSERT INTO CLIENTSTABLE VALUES clientToAdd;
         COMMIT;
         DBMS_OUTPUT.PUT_LINE(
                 'Client with ID: ' || clientToAdd.PERSONID || ', name: ' || clientToAdd.FIRST_NAME || ' ' || clientToAdd.LAST_NAME || 'added successfully'
