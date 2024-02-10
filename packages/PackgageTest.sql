@@ -213,4 +213,16 @@ END;
 /
 
 //------------------------Generate invoice--------------------------//
+DECLARE
+    ClientID NUMBER := 1;
+    invRef REF INVOICE;
+BEGIN
+    INVOICEPACKAGE.GENERATEINVOICE(ClientID);
 
+    invRef := INVOICEPACKAGE.GETINVOICEBYID(1);
+
+    INVOICEPACKAGE.ShowServices(invRef);
+
+
+END;
+/
