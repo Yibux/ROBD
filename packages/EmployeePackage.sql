@@ -14,6 +14,8 @@ CREATE OR REPLACE PACKAGE EmployeePackage AS
         idForBranch IN NUMBER
     );
 
+    FUNCTION getEmployeeByPesel(empPesel in VARCHAR2) RETURN REF EMPLOYEE;
+
 END EmployeePackage;
 /
 
@@ -113,6 +115,20 @@ CREATE OR REPLACE PACKAGE BODY EmployeePackage AS
             DBMS_OUTPUT.PUT_LINE('Employee does not work in the specified branch.');
         END IF;
     END CheckIfEmployeeWorksInTheBranch;
+
+    FUNCTION getEmployeeByPesel(empPesel in VARCHAR2) RETURN REF EMPLOYEE IS
+    v_empRef REF EMPLOYEE;
+    BEGIN
+        SELECT REF(e) INTO v_empRef
+        FROM EMPLOYEESTABLE e
+        WHERE empPesel = e.PESEL;
+
+        RETURN v_empRef;
+
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                RAISE_APPLICATION_ERROR(-20005, 'Client does not exist');
+    END getEmployeeByPesel;
 
 END EmployeePackage;
 /

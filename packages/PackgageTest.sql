@@ -176,9 +176,41 @@ EXCEPTION
 END;
 /
 
+//----------------------------ADD SERVICE------------------------//
+DECLARE
+    description Varchar2(100) := 'Polaczenia i sms bez limitu + Internet 7GB';
+    price Number := 30;
+BEGIN
 
-select *
-from BRANCHTABLE;
+    BRANCHPACKAGE.ADDSERVICE(description, price);
 
-select *
-from EMPLOYEESTABLE;
+    description := 'Polaczenia i sms bez limitu + Internet 12GB';
+    price := 50;
+
+    BRANCHPACKAGE.ADDSERVICE(description, price);
+
+END;
+/
+
+select * from SERVICETABLE;
+select * from EMPLOYEESTABLE;
+select * from CLIENTSTABLE;
+select * from CLIENTSORDERSTABLE;
+
+//----------------------------ADD ORDER------------------------//
+DECLARE
+    client_ref REF ClientObj;
+    service_ref REF SERVICE;
+    employee_ref REF EMPLOYEE;
+BEGIN
+    client_ref := CLIENTPACKAGE.GETCLIENTBYPESEL('53021148691');
+    service_ref := BRANCHPACKAGE.GETSERVICEBYID(1);
+    employee_ref := EMPLOYEEPACKAGE.GETEMPLOYEEBYPESEL('12333333873');
+
+    ORDERPACKAGE.CREATEORDER(client_ref, service_ref, employee_ref);
+
+END;
+/
+
+//------------------------Generate invoice--------------------------//
+

@@ -5,7 +5,7 @@ CREATE OR REPLACE PACKAGE ClientPackage AS
 
    PROCEDURE addPersonClient(clientToAdd in CLIENTOBJ);
    PROCEDURE addCompanyClient(clientToAdd in CLIENTOBJ);
-   PROCEDURE GetClientByPesel(Pesel IN VARCHAR2);
+   FUNCTION GetClientByPesel(clientPesel IN VARCHAR2) RETURN REF CLIENTOBJ;
    PROCEDURE GetActiveServices(p_PersonID IN NUMBER);
 
 END ClientPackage;
@@ -69,16 +69,19 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
     End addCompanyClient;
 
 
-    PROCEDURE GetClientByPesel(Pesel IN VARCHAR2) IS
-        v_ClientId NUMBER;
+    FUNCTION GetClientByPesel(clientPesel IN VARCHAR2) RETURN REF CLIENTOBJ IS
+        v_ClientRef REF CLIENTOBJ;
     BEGIN
-        SELECT PersonID INTO v_ClientId
-        FROM ClientsTable
-        WHERE Pesel = GetClientByPesel.Pesel;
+        SELECT REF(c) INTO v_ClientRef
+        FROM clientsTable c
+        WHERE clientPesel = c.PESEL;
 
-        DBMS_OUTPUT.PUT_LINE('Client Id: ' || v_ClientId);
+        RETURN v_ClientRef;
+
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                RAISE_APPLICATION_ERROR(-20005, 'Client does not exist');
     END GetClientByPesel;
-
 
     PROCEDURE GetActiveServices(p_PersonID IN NUMBER) IS
     CURSOR orderCursor IS
