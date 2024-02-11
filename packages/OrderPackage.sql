@@ -1,8 +1,8 @@
 CREATE OR REPLACE PACKAGE OrderPackage AS
 
---     PROCEDURE ShowOrdersByClient(ClientId IN NUMBER);
+    PROCEDURE ShowOrdersByClient(Client_Id IN NUMBER);
 --
---     PROCEDURE ShowOrdersByEmployee(EmployeeId IN NUMBER);
+    PROCEDURE ShowOrdersByEmployee(Employee_Id IN NUMBER);
 
     PROCEDURE CreateOrder(clientref IN REF ClientObj,service IN REF Service,employee IN REF Employee);
 
@@ -11,19 +11,20 @@ END OrderPackage;
 
 CREATE OR REPLACE PACKAGE BODY OrderPackage AS
 
---     PROCEDURE ShowOrdersByClient(ClientId IN NUMBER) IS
---     BEGIN
---         FOR order_rec IN (SELECT * FROM ClientsOrdersTable WHERE DEREF(SingleClient).ClientId = ShowOrdersByClient.ClientId) LOOP
---             DBMS_OUTPUT.PUT_LINE('Order Id: ' || order_rec.OrderId);
---         END LOOP;
---     END ShowOrdersByClient;
---
---     PROCEDURE ShowOrdersByEmployee(EmployeeId IN NUMBER) IS
---     BEGIN
---         FOR order_rec IN (SELECT * FROM ClientsOrdersTable WHERE DEREF(SingleEmployee).EmployeeId = ShowOrdersByEmployee.EmployeeId) LOOP
---             DBMS_OUTPUT.PUT_LINE('Order Id: ' || order_rec.OrderId);
---         END LOOP;
---     END ShowOrdersByEmployee;
+    PROCEDURE ShowOrdersByClient(Client_Id IN NUMBER) IS
+    BEGIN
+        FOR order_rec IN (SELECT * FROM ClientsOrdersTable WHERE DEREF(SingleClient).PersonId = Client_Id) LOOP
+            DBMS_OUTPUT.PUT_LINE('Order Id: ' || order_rec.OrderId);
+        END LOOP;
+
+    END ShowOrdersByClient;
+
+    PROCEDURE ShowOrdersByEmployee(Employee_Id IN NUMBER) IS
+    BEGIN
+        FOR order_rec IN (SELECT * FROM ClientsOrdersTable WHERE DEREF(SingleEmployee).EmployeeId = Employee_Id) LOOP
+            DBMS_OUTPUT.PUT_LINE('Order Id: ' || order_rec.OrderId);
+        END LOOP;
+    END ShowOrdersByEmployee;
 
     PROCEDURE CreateOrder(clientref IN REF ClientObj,service IN REF Service,employee IN REF Employee) IS
     BEGIN

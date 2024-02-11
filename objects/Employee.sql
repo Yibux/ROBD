@@ -1,6 +1,6 @@
 //--------------------------------EMPLOYEE----------------------------------------//
 CREATE SEQUENCE EmployeeSequence START WITH 1 INCREMENT BY 1;
-
+/
 CREATE OR REPLACE TYPE Employee (
     EmployeeId           Number,
     Contract_Start_Date  DATE,
@@ -42,6 +42,7 @@ CREATE OR REPLACE TYPE BODY Employee AS
         EmploymentType IN VARCHAR2
     ) RETURN SELF AS RESULT IS
     BEGIN
+        SELF.EmployeeId := EmployeeSequence.nextval;
         SELF.Contract_Start_Date := Contract_Start_Date;
         SELF.Contract_End_Date := Contract_End_Date;
         SELF.Registration_Address := Registration_Address;
