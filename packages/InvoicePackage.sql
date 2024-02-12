@@ -32,8 +32,7 @@ CREATE OR REPLACE PACKAGE BODY InvoicePackage AS
             SELECT DEREF(z.SingleService).Description, DEREF(z.SingleService).Price
             FROM ClientsOrdersTable z
             WHERE DEREF(z.SingleClient).PERSONID = DEREF(DEREF(InvoiceRef).SingleClient).PERSONID
-            AND z.CLOSEORDERDATE is null
-            AND ((OrderDate >= deref(InvoiceRef).IssueDate AND deref(InvoiceRef).IssueDate <= CLOSEORDERDATE) OR (CLOSEORDERDATE is null AND OrderDate < SYSDATE));
+            AND ((deref(InvoiceRef).IssueDate >=OrderDate  AND deref(InvoiceRef).IssueDate <= CLOSEORDERDATE) OR (CLOSEORDERDATE is null AND OrderDate < SYSDATE));
 
         v_description VARCHAR2(1000);
         v_price NUMBER;
@@ -55,6 +54,7 @@ CREATE OR REPLACE PACKAGE BODY InvoicePackage AS
         cost NUMBER;
         client_ref REF ClientObj;
     BEGIN
+
         SELECT SUM(DEREF(z.SingleService).Price) INTO cost
         FROM ClientsOrdersTable z
         WHERE DEREF(z.SingleClient).PERSONID = ClientID AND z.CLOSEORDERDATE is null AND OrderDate < SYSDATE;

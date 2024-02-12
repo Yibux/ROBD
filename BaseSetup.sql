@@ -168,27 +168,18 @@ END;
 
 create table InvoiceTables of INVOICE(InvoiceId PRIMARY KEY);
 /
---
--- INSERT INTO ServiceTable VALUES (Service('Service1', 50));
--- INSERT INTO ServiceTable VALUES (Service('Service2', 75));
--- INSERT INTO ServiceTable VALUES (Service('Service3', 100));
---
--- INSERT INTO ClientsTable VALUES (ClientObj(SYSDATE, SYSDATE + 365, Address('Street4', 'City4', 'Province4', '98765', 'Country4'), '1234567890', 'John', 'Doe', '12345678901', '98765432101'));
--- INSERT INTO ClientsTable VALUES (ClientObj(SYSDATE, SYSDATE + 365, Address('Street5', 'City5', 'Province5', '54321', 'Country5'), '0987654321', 'Jane', 'Smith', '98765432102', '12345678902'));
---
--- INSERT INTO InvoiceTables VALUES (Invoice(SYSDATE, 200, (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 1)));
--- INSERT INTO InvoiceTables VALUES (Invoice(SYSDATE, 150, (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 15)));
---
--- SELECT * FROM ServiceTable;
--- SELECT * FROM ClientsTable;
--- SELECT * FROM InvoiceTables;
---
---
--- SELECT i.InvoiceId, i.IssueDate, i.Cost,
---        DEREF(i.SingleClient).ClientId as ClientId,
---        DEREF(i.SingleClient).First_Name as Client_First_Name,
---        DEREF(i.SingleClient).Last_Name as Client_Last_Name
--- FROM InvoiceTables i;
+
+INSERT INTO ServiceTable VALUES (Service('Service1', 50));
+INSERT INTO ServiceTable VALUES (Service('Service2', 75));
+INSERT INTO ServiceTable VALUES (Service('Service3', 100));
+
+INSERT INTO ClientsTable VALUES (ClientObj(SYSDATE, SYSDATE + 365, Address('Street4', 'City4', 'Province4', '98765', 'Country4'), '1234567890', 'John', 'Doe', '12345678901', '98765432101'));
+INSERT INTO ClientsTable VALUES (ClientObj(SYSDATE, SYSDATE + 365, Address('Street5', 'City5', 'Province5', '54321', 'Country5'), '0987654321', 'Jane', 'Smith', '98765432102', '12345678902'));
+
+
+SELECT * FROM ServiceTable;
+SELECT * FROM ClientsTable;
+
 
 
 //--------------------------------EMPLOYEE----------------------------------------//
@@ -334,83 +325,82 @@ create table BranchTable of Branch (BranchId PRIMARY KEY )
 nested table Employees store as EmployeeListTable_nested;
 /
 --
--- INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street6', 'City6', 'Province6', '11111', 'Country6'), '1111111111', 'John', 'Smith', '11111111111', 5000, 'Full Time'));
--- INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street7', 'City7', 'Province7', '22222', 'Country7'), '2222222222', 'Jane', 'Doe', '22222222222', 6000, 'Part Time'));
+INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street6', 'City6', 'Province6', '11111', 'Country6'), '1111111111', 'John', 'Smith', '11111111111', 5000, 'Full Time'));
+INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street7', 'City7', 'Province7', '22222', 'Country7'), '2222222222', 'Jane', 'Doe', '22222222222', 6000, 'Part Time'));
+
+INSERT INTO BranchTable VALUES (
+    Branch(
+        Address('Street8', 'City8', 'Province8', '33333', 'Country8'),
+        EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3333333333', 'Alice', 'Johnson', '33333333333', 7000, 'Full Time')))
+);
 --
--- INSERT INTO BranchTable VALUES (
---     Branch(
---         Address('Street8', 'City8', 'Province8', '33333', 'Country8'),
---         EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3333333333', 'Alice', 'Johnson', '33333333333', 7000, 'Full Time')))
--- );
---
--- INSERT INTO BranchTable VALUES (
---     Branch(
---         Address('Street10', 'City10', 'Province10', '55555', 'Country10'),
---         EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street11', 'City11', 'Province11', '66666', 'Country11'), '4444444444', 'Bob', 'Miller', '44444444444', 8000, 'Part Time'))
---     )
--- );
+INSERT INTO BranchTable VALUES (
+    Branch(
+        Address('Street10', 'City10', 'Province10', '55555', 'Country10'),
+        EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street11', 'City11', 'Province11', '66666', 'Country11'), '4444444444', 'Bob', 'Miller', '44444444444', 8000, 'Part Time'))
+    )
+);
 
 --
--- INSERT INTO ClientsOrdersTable VALUES (
---     ClientOrder(
---         (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 29),
---         (SELECT REF(s) FROM ServiceTable s WHERE s.ServiceId = 1),
---         (SELECT REF(e) FROM EmployeesTable e WHERE e.EmployeeId = 1),
---         SYSDATE
---     )
--- );
+INSERT INTO ClientsOrdersTable VALUES (
+    ClientOrder(
+        (SELECT REF(c) FROM ClientsTable c WHERE ROWNUM = 1),
+        (SELECT REF(s) FROM ServiceTable s WHERE ROWNUM = 1),
+        (SELECT REF(e) FROM EmployeesTable e WHERE ROWNUM = 1),
+        SYSDATE
+    )
+);
+
+SELECT * FROM ServiceTable;
+SELECT * FROM ClientsTable;
+SELECT * FROM InvoiceTables;
+SELECT * FROM EmployeesTable;
+SELECT * FROM ClientsOrdersTable;
+
+DECLARE
+    client_ref REF ClientObj;
+    service_ref REF SERVICE;
+    employee_ref REF EMPLOYEE;
+    client_id NUMBER := 83;
+    invoice_ref REF Invoice;
+    order_ref REF ClientOrder;
+    order_obj ClientOrder;
+    order_date DATE;
+BEGIN
+
+--     SELECT REF(c) INTO client_ref FROM ClientsTable c WHERE PERSONID = client_id;
+--     SELECT REF(s) INTO service_ref FROM ServiceTable s WHERE SERVICEID = 16;
+--     SELECT REF(e) INTO employee_ref FROM EmployeesTable e WHERE EMPLOYEEID = 47;
+--     order_date := SYSDATE;
+-- --
+--     ORDERPACKAGE.CREATEORDER(client_ref,service_ref,employee_ref);
+
+--     ORDERPACKAGE.SHOWORDERSBYCLIENT(client_id);
+--     ORDERPACKAGE.SHOWORDERSBYEMPLOYEE(47);
+
+--        INVOICEPACKAGE.GENERATEINVOICE(client_id);
+
+        SELECT REF(c) INTO invoice_ref FROM INVOICETABLES c WHERE INVOICEID = 81;
+       INVOICEPACKAGE.SHOWSERVICES(invoice_ref);
+-- -- --
+-- -- --
+--         CLIENTPACKAGE.GETACTIVESERVICES(client_id);
 --
--- INSERT INTO ClientsOrdersTable VALUES (
---     ClientOrder(
---         (SELECT REF(c) FROM ClientsTable c WHERE c.ClientId = 2),
---         (SELECT REF(s) FROM ServiceTable s WHERE s.ServiceId = 2),
---         (SELECT REF(e) FROM EmployeesTable e WHERE e.EmployeeId = 2),
---         SYSDATE + 1
---     )
--- );
---
--- SELECT * FROM ServiceTable;
--- SELECT * FROM ClientsTable;
--- SELECT * FROM InvoiceTables;
--- SELECT * FROM EmployeesTable;
--- SELECT * FROM ClientsOrdersTable;
---
--- SELECT
---     o.OrderId,
---     DEREF(o.SingleClient).ClientId AS ClientId,
---     DEREF(o.SingleClient).Contract_Start_Date AS Client_Contract_Start_Date,
---     DEREF(o.SingleClient).Contract_End_Date AS Client_Contract_End_Date,
---     DEREF(o.SingleClient).Registration_Address.Street AS Client_Street,
---     DEREF(o.SingleClient).Registration_Address.City AS Client_City,
---     DEREF(o.SingleClient).Registration_Address.Province AS Client_Province,
---     DEREF(o.SingleClient).Registration_Address.Postal_Code AS Client_Postal_Code,
---     DEREF(o.SingleClient).Registration_Address.Country AS Client_Country,
---     DEREF(o.SingleClient).Phone_Number AS Client_Phone_Number,
---     DEREF(o.SingleClient).First_Name AS Client_First_Name,
---     DEREF(o.SingleClient).Last_Name AS Client_Last_Name,
---     DEREF(o.SingleClient).NIP AS Client_NIP,
---     DEREF(o.SingleClient).Pesel AS Client_Pesel,
---     o.SingleService.ServiceId AS ServiceId,
---     o.SingleService.Description AS Service_Description,
---     o.SingleService.Price AS Service_Price,
---     DEREF(o.SingleEmployee).EmployeeId AS EmployeeId,
---     DEREF(o.SingleEmployee).Contract_Start_Date AS Employee_Contract_Start_Date,
---     DEREF(o.SingleEmployee).Contract_End_Date AS Employee_Contract_End_Date,
---     DEREF(o.SingleEmployee).Registration_Address.Street AS Employee_Street,
---     DEREF(o.SingleEmployee).Registration_Address.City AS Employee_City,
---     DEREF(o.SingleEmployee).Registration_Address.Province AS Employee_Province,
---     DEREF(o.SingleEmployee).Registration_Address.Postal_Code AS Employee_Postal_Code,
---     DEREF(o.SingleEmployee).Registration_Address.Country AS Employee_Country,
---     DEREF(o.SingleEmployee).Phone_Number AS Employee_Phone_Number,
---     DEREF(o.SingleEmployee).First_Name AS Employee_First_Name,
---     DEREF(o.SingleEmployee).Last_Name AS Employee_Last_Name,
---     DEREF(o.SingleEmployee).Pesel AS Employee_Pesel,
---     DEREF(o.SingleEmployee).Salary AS Employee_Salary,
---     DEREF(o.SingleEmployee).EmploymentType AS Employee_EmploymentType,
---     o.OrderDate
--- FROM ClientsOrdersTable o;
---
---
--- SELECT * FROM BranchTable;
+       SELECT VALUE(e) INTO order_obj FROM ClientsOrdersTable e WHERE orderid = 145;
+        order_obj.CLOSEORDER();
+        UPDATE ClientsOrdersTable e SET e = order_obj WHERE orderid = 145;
+
+
+        DBMS_OUTPUT.PUT_LINE('---------------------------------');
+
+        CLIENTPACKAGE.GETACTIVESERVICES(client_id);
+
+
+        INVOICEPACKAGE.SHOWSERVICES(invoice_ref);
+
+END;
+
+
 
 --todo: package, generowanie faktur, dodawanie pracowników, show ordersbyemp/client, getclientbypesel
+

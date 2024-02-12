@@ -86,20 +86,22 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
     PROCEDURE GetActiveServices(p_PersonID IN NUMBER) IS
     CURSOR orderCursor IS
         SELECT DEREF(c.SINGLESERVICE).DESCRIPTION AS service_description,
-               DEREF(c.SINGLESERVICE).PRICE AS service_price
+               DEREF(c.SINGLESERVICE).PRICE AS service_price,
+               c.ORDERID
         FROM CLIENTSORDERSTABLE c
         WHERE DEREF(c.SINGLECLIENT).PersonID = p_PersonID
         AND CLOSEORDERDATE IS NULL;
 
     v_service_description VARCHAR2(100);
     v_service_price NUMBER;
+    ORDER_ID NUMBER;
 BEGIN
     OPEN orderCursor;
 
     LOOP
-        FETCH orderCursor INTO v_service_description, v_service_price;
+        FETCH orderCursor INTO v_service_description, v_service_price,ORDER_ID;
         EXIT WHEN orderCursor%NOTFOUND;
-        DBMS_OUTPUT.PUT_LINE('Description: ' || v_service_description || ' Price: ' || v_service_price);
+        DBMS_OUTPUT.PUT_LINE('Order ID: ' || ORDER_ID ||' Description: ' || v_service_description || ' Price: ' || v_service_price);
     END LOOP;
 
     CLOSE orderCursor;
