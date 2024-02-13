@@ -27,3 +27,7 @@ CREATE OR REPLACE TYPE BODY Branch AS
     END;
 END;
 /
+
+create table BranchTable of Branch (BranchId PRIMARY KEY )
+nested table Employees store as EmployeeListTable_nested;
+/

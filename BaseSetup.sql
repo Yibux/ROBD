@@ -79,8 +79,6 @@ CREATE SEQUENCE PersonSequence START WITH 1 INCREMENT BY 1;
 CREATE OR REPLACE TYPE ClientObj AS OBJECT
 (
     PersonId             NUMBER,
-    Contract_Start_Date  DATE,
-    Contract_End_Date    DATE,
     Registration_Address Address,
     Phone_Number         VARCHAR2(12),
     First_Name           VARCHAR2(20),
@@ -89,8 +87,6 @@ CREATE OR REPLACE TYPE ClientObj AS OBJECT
     Pesel                VARCHAR2(11),
 
     CONSTRUCTOR FUNCTION ClientObj(
-        Contract_Start_Date in DATE,
-        Contract_End_Date in DATE,
         Registration_Address in Address,
         Phone_Number in VARCHAR2,
         First_Name VARCHAR2,
@@ -104,8 +100,6 @@ CREATE OR REPLACE TYPE ClientObj AS OBJECT
 
 CREATE OR REPLACE TYPE BODY ClientObj AS
     CONSTRUCTOR FUNCTION ClientObj(
-        Contract_Start_Date in DATE,
-        Contract_End_Date in DATE,
         Registration_Address in Address,
         Phone_Number in VARCHAR2,
         First_Name VARCHAR2,
@@ -114,9 +108,7 @@ CREATE OR REPLACE TYPE BODY ClientObj AS
         Pesel VARCHAR2
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.PersonId := PeronSequence.nextval;
-        SELF.Contract_Start_Date := Contract_Start_Date;
-        SELF.Contract_End_Date := Contract_End_Date;
+        SELF.PersonId := PersonSequence.nextval;
         SELF.Registration_Address := Registration_Address;
         SELF.Phone_Number := Phone_Number;
         SELF.First_Name := First_Name;
@@ -173,8 +165,8 @@ INSERT INTO ServiceTable VALUES (Service('Service1', 50));
 INSERT INTO ServiceTable VALUES (Service('Service2', 75));
 INSERT INTO ServiceTable VALUES (Service('Service3', 100));
 
-INSERT INTO ClientsTable VALUES (ClientObj(SYSDATE, SYSDATE + 365, Address('Street4', 'City4', 'Province4', '98765', 'Country4'), '1234567890', 'John', 'Doe', '12345678901', '98765432101'));
-INSERT INTO ClientsTable VALUES (ClientObj(SYSDATE, SYSDATE + 365, Address('Street5', 'City5', 'Province5', '54321', 'Country5'), '0987654321', 'Jane', 'Smith', '98765432102', '12345678902'));
+INSERT INTO ClientsTable VALUES (ClientObj( Address('Street4', 'City4', 'Province4', '98765', 'Country4'), '1234567890', 'John', 'Doe', '12345678901', '98765432101'));
+INSERT INTO ClientsTable VALUES (ClientObj( Address('Street5', 'City5', 'Province5', '54321', 'Country5'), '0987654321', 'Jane', 'Smith', '98765432102', '12345678902'));
 
 
 SELECT * FROM ServiceTable;
@@ -330,16 +322,17 @@ INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Str
 
 INSERT INTO BranchTable VALUES (
     Branch(
-        Address('Street8', 'City8', 'Province8', '33333', 'Country8'),
-        EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3333333333', 'Alice', 'Johnson', '33333333333', 7000, 'Full Time')))
+        Address('Street8', 'City8', 'Province8', '33333', 'Country8'))
 );
+--         EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3333333333', 'Alice', 'Johnson', '33333333333', 7000, 'Full Time')))
+
 --
 INSERT INTO BranchTable VALUES (
     Branch(
-        Address('Street10', 'City10', 'Province10', '55555', 'Country10'),
-        EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street11', 'City11', 'Province11', '66666', 'Country11'), '4444444444', 'Bob', 'Miller', '44444444444', 8000, 'Part Time'))
-    )
+        Address('Street10', 'City10', 'Province10', '55555', 'Country10'))
+
 );
+--         EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street11', 'City11', 'Province11', '66666', 'Country11'), '4444444444', 'Bob', 'Miller', '44444444444', 8000, 'Part Time'))
 
 --
 INSERT INTO ClientsOrdersTable VALUES (
@@ -356,46 +349,49 @@ SELECT * FROM ClientsTable;
 SELECT * FROM InvoiceTables;
 SELECT * FROM EmployeesTable;
 SELECT * FROM ClientsOrdersTable;
+Select * from BranchTable;
 
 DECLARE
     client_ref REF ClientObj;
     service_ref REF SERVICE;
     employee_ref REF EMPLOYEE;
-    client_id NUMBER := 83;
+    client_id NUMBER := 101;
     invoice_ref REF Invoice;
     order_ref REF ClientOrder;
     order_obj ClientOrder;
     order_date DATE;
 BEGIN
 
+--         BRANCHPACKAGE.ADDBRANCH(Address('Street10', 'City10', 'Province10', '55555', 'Country10'));
+--         EMPLOYEEPACKAGE.ADDEMPLOYEETOBRANCH(Employee(SYSDATE, SYSDATE + 365, Address('Street11', 'City11', 'Province11', '66666', 'Country11'), '4444444444', 'Bob', 'Miller', '44444444444', 8000, 'Part Time'),41);
 --     SELECT REF(c) INTO client_ref FROM ClientsTable c WHERE PERSONID = client_id;
---     SELECT REF(s) INTO service_ref FROM ServiceTable s WHERE SERVICEID = 16;
---     SELECT REF(e) INTO employee_ref FROM EmployeesTable e WHERE EMPLOYEEID = 47;
+--     SELECT REF(s) INTO service_ref FROM ServiceTable s WHERE SERVICEID = 1;
+--     SELECT REF(e) INTO employee_ref FROM EmployeesTable e WHERE EMPLOYEEID = 221;
 --     order_date := SYSDATE;
 -- --
 --     ORDERPACKAGE.CREATEORDER(client_ref,service_ref,employee_ref);
 
---     ORDERPACKAGE.SHOWORDERSBYCLIENT(client_id);
---     ORDERPACKAGE.SHOWORDERSBYEMPLOYEE(47);
+    ORDERPACKAGE.SHOWORDERSBYCLIENT(client_id);
+--     ORDERPACKAGE.SHOWORDERSBYEMPLOYEE(221);
 
 --        INVOICEPACKAGE.GENERATEINVOICE(client_id);
 
-        SELECT REF(c) INTO invoice_ref FROM INVOICETABLES c WHERE INVOICEID = 81;
-       INVOICEPACKAGE.SHOWSERVICES(invoice_ref);
+        SELECT REF(c) INTO invoice_ref FROM INVOICETABLES c WHERE INVOICEID = 101;
+--        INVOICEPACKAGE.SHOWSERVICES(invoice_ref);
 -- -- --
 -- -- --
 --         CLIENTPACKAGE.GETACTIVESERVICES(client_id);
 --
-       SELECT VALUE(e) INTO order_obj FROM ClientsOrdersTable e WHERE orderid = 145;
-        order_obj.CLOSEORDER();
-        UPDATE ClientsOrdersTable e SET e = order_obj WHERE orderid = 145;
-
-
-        DBMS_OUTPUT.PUT_LINE('---------------------------------');
-
-        CLIENTPACKAGE.GETACTIVESERVICES(client_id);
-
-
+--        SELECT VALUE(e) INTO order_obj FROM ClientsOrdersTable e WHERE orderid = 161;
+--         order_obj.CLOSEORDER();
+--         UPDATE ClientsOrdersTable e SET e = order_obj WHERE orderid = 161;
+--
+--
+--         DBMS_OUTPUT.PUT_LINE('---------------------------------');
+--
+--         CLIENTPACKAGE.GETACTIVESERVICES(client_id);
+--
+--
         INVOICEPACKAGE.SHOWSERVICES(invoice_ref);
 
 END;

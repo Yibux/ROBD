@@ -12,10 +12,10 @@ END BranchPackage;
 
 CREATE OR REPLACE PACKAGE BODY BranchPackage AS
     PROCEDURE addBranch(BranchAddress in ADDRESS) IS
-        branch_data Branch := Branch(BranchAddress);
+        branch_data Branch := Branch(BranchAddress,EmployeeList());
     BEGIN
-        INSERT INTO BranchTable (BranchId, Branch_address, Employees)
-        VALUES (branch_data.BranchId, branch_data.Branch_address, branch_data.Employees);
+        INSERT INTO BranchTable
+        VALUES (branch_data);
         Commit;
         DBMS_OUTPUT.PUT_LINE('Branch with id ' || branch_data.BRANCHID || ' has been created.');
     END;

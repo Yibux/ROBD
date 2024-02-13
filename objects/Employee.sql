@@ -1,7 +1,7 @@
 //--------------------------------EMPLOYEE----------------------------------------//
 CREATE SEQUENCE EmployeeSequence START WITH 1 INCREMENT BY 1;
 /
-CREATE OR REPLACE TYPE Employee (
+CREATE OR REPLACE TYPE Employee AS OBJECT (
     EmployeeId           Number,
     Contract_Start_Date  DATE,
     Contract_End_Date    DATE,
@@ -58,4 +58,4 @@ CREATE OR REPLACE TYPE BODY Employee AS
 
 END;
 /
-
+create table EmployeesTable of Employee (EmployeeId PRIMARY KEY );
