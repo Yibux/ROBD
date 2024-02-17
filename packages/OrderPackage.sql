@@ -27,10 +27,8 @@ CREATE OR REPLACE PACKAGE BODY OrderPackage AS
     END ShowOrdersByEmployee;
 
     PROCEDURE CreateOrder(clientref IN REF ClientObj,service IN REF Service,employee IN REF Employee) IS
-        singleOrder CLIENTORDER := ClientOrder(clientref, service, employee, SYSDATE);
     BEGIN
-        singleOrder.OrderId := ORDERSEQUENCE.nextval;
-        INSERT INTO ClientsOrdersTable VALUES singleOrder;
+        INSERT INTO ClientsOrdersTable VALUES (ClientOrder(ORDERSEQUENCE.nextval ,clientref, service, employee, SYSDATE));
         commit;
 
         DBMS_OUTPUT.PUT_LINE('Order created!');

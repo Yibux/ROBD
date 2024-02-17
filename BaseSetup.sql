@@ -5,30 +5,8 @@ CREATE OR REPLACE TYPE Service AS OBJECT
 (
     ServiceId Number,
     Description VARCHAR2(100),
-    Price NUMBER,
-    CONSTRUCTOR FUNCTION Service
-    (
-        Description IN VARCHAR2,
-        Price IN NUMBER
-    ) RETURN SELF AS RESULT
+    Price NUMBER
 );
-
-/
-
-CREATE OR REPLACE TYPE BODY Service AS
-    CONSTRUCTOR FUNCTION Service
-    (
-        Description IN VARCHAR2,
-        Price IN NUMBER
-    ) RETURN SELF AS RESULT IS
-    BEGIN
---         SELF.ServiceId := ServiceSequence.nextval;
-        SELF.Description := Description;
-        SELF.Price := Price;
-        RETURN;
-    END;
-END;
-
 /
 
 create table ServiceTable of Service (PRIMARY KEY (ServiceId));
@@ -84,42 +62,9 @@ CREATE OR REPLACE TYPE ClientObj AS OBJECT
     First_Name           VARCHAR2(20),
     Last_Name            VARCHAR2(40),
     NIP                  VARCHAR2(11),
-    Pesel                VARCHAR2(11),
-
-    CONSTRUCTOR FUNCTION ClientObj(
-        Registration_Address in Address,
-        Phone_Number in VARCHAR2,
-        First_Name VARCHAR2,
-        Last_Name VARCHAR2,
-        NIP VARCHAR2,
-        Pesel VARCHAR2
-    ) RETURN SELF AS RESULT
+    Pesel                VARCHAR2(11)
 );
 
-/
-
-CREATE OR REPLACE TYPE BODY ClientObj AS
-    CONSTRUCTOR FUNCTION ClientObj(
-        Registration_Address in Address,
-        Phone_Number in VARCHAR2,
-        First_Name VARCHAR2,
-        Last_Name VARCHAR2,
-        NIP VARCHAR2,
-        Pesel VARCHAR2
-    ) RETURN SELF AS RESULT IS
-    BEGIN
---         SELF.PersonId := PersonSequence.nextval;
-        SELF.Registration_Address := Registration_Address;
-        SELF.Phone_Number := Phone_Number;
-        SELF.First_Name := First_Name;
-        SELF.Last_Name := Last_Name;
-        SELF.NIP := NIP;
-        SELF.Pesel := Pesel;
-        RETURN;
-    END;
-END;
-
-/
 
 create table ClientsTable Of ClientObj (PRIMARY KEY (PersonId));
 
@@ -132,96 +77,31 @@ CREATE OR REPLACE TYPE Invoice AS OBJECT
     InvoiceId Number,
     IssueDate DATE,
     Cost NUMBER,
-    SingleClient REF ClientObj,
-    CONSTRUCTOR FUNCTION Invoice
-    (
-        IssueDate IN DATE,
-        Cost IN NUMBER,
-        SingleClient in ref ClientObj
-    ) RETURN SELF AS RESULT
+    SingleClient REF ClientObj
 );
-
-CREATE OR REPLACE TYPE BODY Invoice AS
-    CONSTRUCTOR FUNCTION Invoice
-    (
-        IssueDate IN DATE,
-        Cost IN NUMBER,
-        SingleClient in ref ClientObj
-    ) RETURN SELF AS RESULT IS
-    BEGIN
---         SELF.InvoiceId := InvoiceSequence.nextval;
-        SELF.IssueDate := IssueDate;
-        SELF.Cost := Cost;
-        SELF.SingleClient := SingleClient;
-        RETURN;
-    END;
-END;
-/
 
 create table InvoiceTables of INVOICE(InvoiceId PRIMARY KEY);
 /
 
 //--------------------------------EMPLOYEE----------------------------------------//
 CREATE SEQUENCE EmployeeSequence START WITH 1 INCREMENT BY 1;
-
-CREATE OR REPLACE TYPE Employee as OBJECT (
+/
+CREATE OR REPLACE TYPE Employee AS OBJECT (
     EmployeeId           Number,
     Contract_Start_Date  DATE,
     Contract_End_Date    DATE,
     Registration_Address Address,
-    Phone_Number         VARCHAR2(12),
-    First_Name           VARCHAR2(20),
-    Last_Name            VARCHAR2(40),
+    Phone_Number         VARCHAR(12),
+    First_Name           VARCHAR(20),
+    Last_Name            VARCHAR(40),
     Pesel                VARCHAR2(11),
     Salary               NUMBER,
-    EmploymentType       VARCHAR2(50),
-
-    CONSTRUCTOR FUNCTION Employee (
-        Contract_Start_Date IN DATE,
-        Contract_End_Date IN DATE,
-        Registration_Address IN Address,
-        Phone_number IN VARCHAR2,
-        First_Name IN VARCHAR2,
-        Last_Name IN VARCHAR2,
-        Pesel IN VARCHAR2,
-        Salary IN NUMBER,
-        EmploymentType IN VARCHAR2
-    ) RETURN SELF AS RESULT
+    EmploymentType       VARCHAR2(50)
 );
 
 /
-CREATE OR REPLACE TYPE BODY Employee AS
-
-    CONSTRUCTOR FUNCTION Employee(
-        Contract_Start_Date IN DATE,
-        Contract_End_Date IN DATE,
-        Registration_Address IN Address,
-        Phone_number IN VARCHAR2,
-        First_Name IN VARCHAR2,
-        Last_Name IN VARCHAR2,
-        Pesel IN VARCHAR2,
-        Salary IN NUMBER,
-        EmploymentType IN VARCHAR2
-    ) RETURN SELF AS RESULT IS
-    BEGIN
---         SELF.EMPLOYEEID := EMPLOYEESEQUENCE.nextval;
-        SELF.Contract_Start_Date := Contract_Start_Date;
-        SELF.Contract_End_Date := Contract_End_Date;
-        SELF.Registration_Address := Registration_Address;
-        SELF.Phone_number := Phone_number;
-        SELF.First_Name := First_Name;
-        SELF.Last_Name := Last_Name;
-        SELF.Pesel := Pesel;
-        SELF.Salary := Salary;
-        SELF.EmploymentType := EmploymentType;
-
-        RETURN;
-    END;
-
-END;
-/
-
 create table EmployeesTable of Employee (EmployeeId PRIMARY KEY );
+
 
 
 //---------------------------ORDER----------------------------//
@@ -236,6 +116,7 @@ CREATE OR REPLACE TYPE ClientOrder AS OBJECT (
     CloseOrderDate DATE,
 
     CONSTRUCTOR FUNCTION ClientOrder(
+        newId in Number,
         SingleClient IN REF ClientObj,
         SingleService IN REF SERVICE,
         SingleEmployee IN REF EMPLOYEE,
@@ -247,13 +128,14 @@ CREATE OR REPLACE TYPE ClientOrder AS OBJECT (
 
 CREATE OR REPLACE TYPE BODY ClientOrder AS
     CONSTRUCTOR FUNCTION ClientOrder(
+        newId in Number,
         SingleClient in REF ClientObj,
         SingleService in REF SERVICE,
         SingleEmployee in REF EMPLOYEE,
         OrderDate in Date
     ) RETURN SELF AS RESULT IS
     BEGIN
---         SELF.OrderId := OrderSequence.nextval;
+        SELF.OrderId := newId;
         SELF.SingleClient := SingleClient;
         SELF.SingleService := SingleService;
         SELF.SingleEmployee := SingleEmployee;

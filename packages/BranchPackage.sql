@@ -21,16 +21,14 @@ CREATE OR REPLACE PACKAGE BODY BranchPackage AS
         VALUES (BRANCH(BRANCHSEQUENCE.nextval, BranchAddress));
         Commit;
         DBMS_OUTPUT.PUT_LINE('Branch with id ' || BRANCHSEQUENCE.currval || ' has been created.');
-    END;
+    END addBranch;
 
-     PROCEDURE addService(
+    PROCEDURE addService(
         descriptinOfService IN VARCHAR2,
         ServicePrice IN NUMBER
     ) IS
-         newService Service := SERVICE(descriptinOfService, ServicePrice);
     BEGIN
-        newService.ServiceId := ServiceSequence.nextval;
-        INSERT INTO SERVICETABLE VALUES newService;
+        INSERT INTO SERVICETABLE VALUES (SERVICE(SERVICESEQUENCE.nextval ,descriptinOfService, ServicePrice));
         Commit;
         DBMS_OUTPUT.PUT_LINE('Service with description: ' || descriptinOfService || ' and price: ' ||
                              ServicePrice || ' added!');

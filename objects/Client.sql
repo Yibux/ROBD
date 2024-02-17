@@ -5,7 +5,7 @@ CREATE SEQUENCE PersonSequence START WITH 1 INCREMENT BY 1;
 
 CREATE OR REPLACE TYPE ClientObj AS OBJECT
 (
-    PersonId             Number,
+    PersonId             NUMBER,
     Registration_Address Address,
     Phone_Number         VARCHAR2(12),
     First_Name           VARCHAR2(20),
@@ -14,12 +14,13 @@ CREATE OR REPLACE TYPE ClientObj AS OBJECT
     Pesel                VARCHAR2(11),
 
     CONSTRUCTOR FUNCTION ClientObj(
-        Registration_Address IN Address,
-        Phone_Number IN VARCHAR2,
-        First_Name IN VARCHAR2,
-        Last_Name IN VARCHAR2,
-        NIP IN VARCHAR2,
-        Pesel IN VARCHAR2
+        newId in Number,
+        Registration_Address in Address,
+        Phone_Number in VARCHAR2,
+        First_Name VARCHAR2,
+        Last_Name VARCHAR2,
+        NIP VARCHAR2,
+        Pesel VARCHAR2
     ) RETURN SELF AS RESULT
 );
 
@@ -27,15 +28,16 @@ CREATE OR REPLACE TYPE ClientObj AS OBJECT
 
 CREATE OR REPLACE TYPE BODY ClientObj AS
     CONSTRUCTOR FUNCTION ClientObj(
-        Registration_Address IN Address,
-        Phone_Number IN VARCHAR2,
-        First_Name IN VARCHAR2,
-        Last_Name IN VARCHAR2,
-        NIP IN VARCHAR2,
-        Pesel IN VARCHAR2
+        newId in Number,
+        Registration_Address in Address,
+        Phone_Number in VARCHAR2,
+        First_Name VARCHAR2,
+        Last_Name VARCHAR2,
+        NIP VARCHAR2,
+        Pesel VARCHAR2
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.PersonId := PersonSequence.nextval;
+        SELF.PersonId := newId;
         SELF.Registration_Address := Registration_Address;
         SELF.Phone_Number := Phone_Number;
         SELF.First_Name := First_Name;
@@ -45,6 +47,7 @@ CREATE OR REPLACE TYPE BODY ClientObj AS
         RETURN;
     END;
 END;
+
 
 /
 create table ClientsTable Of ClientObj (PRIMARY KEY (PersonId));

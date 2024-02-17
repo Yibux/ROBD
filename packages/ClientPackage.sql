@@ -3,8 +3,20 @@ drop package ClientPackage;
 
 CREATE OR REPLACE PACKAGE ClientPackage AS
 
-   PROCEDURE addPersonClient(clientToAdd in CLIENTOBJ);
-   PROCEDURE addCompanyClient(clientToAdd in CLIENTOBJ);
+   PROCEDURE addPersonClient(
+        Registration_Address IN Address,
+        Phone_Number IN VARCHAR2,
+        First_Name IN VARCHAR2,
+        Last_Name IN VARCHAR2,
+        PeselToAdd IN VARCHAR2
+   );
+   PROCEDURE addCompanyClient(
+        Registration_Address IN Address,
+        Phone_Number IN VARCHAR2,
+        First_Name_Owner IN VARCHAR2,
+        Last_Name_Owner IN VARCHAR2,
+        NIPToAdd IN VARCHAR2
+   );
    FUNCTION GetClientByPesel(clientPesel IN VARCHAR2) RETURN REF CLIENTOBJ;
    PROCEDURE GetActiveServices(p_PersonID IN NUMBER);
 
@@ -13,14 +25,22 @@ END ClientPackage;
 
 CREATE OR REPLACE PACKAGE BODY ClientPackage AS
 
-    PROCEDURE addPersonClient(clientToAdd in CLIENTOBJ) IS
+    PROCEDURE addPersonClient(
+        Registration_Address IN Address,
+        Phone_Number IN VARCHAR2,
+        First_Name IN VARCHAR2,
+        Last_Name IN VARCHAR2,
+        PeselToAdd IN VARCHAR2
+    ) IS
         CLIENT_EXISTS_EXCEPTION EXCEPTION;
         cli CLIENTOBJ;
+        clientToAdd CLIENTOBJ;
     Begin
         Begin
             SELECT VALUE(c) INTO cli
             FROM CLIENTSTABLE c
-            WHERE c.pesel = clientToAdd.PESEL and ROWNUM <= 1;
+            WHERE c.pesel = PeselToAdd and ROWNUM <= 1;
+
         EXCEPTION
         WHEN NO_DATA_FOUND THEN
             cli := NULL;
@@ -30,12 +50,13 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
             RAISE CLIENT_EXISTS_EXCEPTION;
         end if;
 
-        clientToAdd.PersonId := PERONSEQUENCE.nextval;
+        clientToAdd := CLIENTOBJ(PERSONSEQUENCE.nextval, Registration_Address, Phone_Number, First_Name, Last_Name, null, PeselToAdd);
 
         INSERT INTO CLIENTSTABLE VALUES clientToAdd;
+
         COMMIT;
         DBMS_OUTPUT.PUT_LINE(
-                'Client with ID: ' || clientToAdd.PERSONID || ', name: ' || clientToAdd.FIRST_NAME || ' ' || clientToAdd.LAST_NAME || 'added successfully'
+                'Client with ID: ' || clientToAdd.PERSONID || ', name: ' || clientToAdd.FIRST_NAME || ' ' || clientToAdd.LAST_NAME || ' added successfully'
         );
         EXCEPTION
             WHEN CLIENT_EXISTS_EXCEPTION THEN
@@ -43,16 +64,21 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
     End addPersonClient;
 
 
-    PROCEDURE addCompanyClient(clientToAdd in CLIENTOBJ) IS
+    PROCEDURE addCompanyClient(
+        Registration_Address IN Address,
+        Phone_Number IN VARCHAR2,
+        First_Name_Owner IN VARCHAR2,
+        Last_Name_Owner IN VARCHAR2,
+        NIPToAdd IN VARCHAR2
+    ) IS
         CLIENT_EXISTS_EXCEPTION EXCEPTION;
         cli CLIENTOBJ;
+        clientToAdd CLIENTOBJ;
     Begin
         Begin
             SELECT VALUE(c) INTO cli
             FROM CLIENTSTABLE c
-            WHERE c.NIP = clientToAdd.NIP and ROWNUM <= 1;
-
-            DBMS_OUTPUT.PUT_LINE(cli.NIP);
+            WHERE c.NIP = NIPToAdd and ROWNUM <= 1;
 
         EXCEPTION
         WHEN NO_DATA_FOUND THEN
@@ -63,12 +89,13 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
             RAISE CLIENT_EXISTS_EXCEPTION;
         end if;
 
-        clientToAdd.PersonId := PERONSEQUENCE.nextval;
+        clientToAdd := CLIENTOBJ(PERSONSEQUENCE.nextval, Registration_Address, Phone_Number, First_Name_Owner, Last_Name_Owner, NIPToAdd, null);
+
 
         INSERT INTO CLIENTSTABLE VALUES clientToAdd;
         COMMIT;
         DBMS_OUTPUT.PUT_LINE(
-                'Client with ID: ' || clientToAdd.PERSONID || ', name: ' || clientToAdd.FIRST_NAME || ' ' || clientToAdd.LAST_NAME || 'added successfully'
+                'Company with ID: ' || clientToAdd.PERSONID || ', name: ' || clientToAdd.FIRST_NAME || ' ' || clientToAdd.LAST_NAME || 'added successfully'
         );
     End addCompanyClient;
 

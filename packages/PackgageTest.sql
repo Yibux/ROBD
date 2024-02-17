@@ -8,10 +8,6 @@ BEGIN
 END;
 /
 
-select * from BRANCHTABLE;
-SELECT BRANCHSEQUENCE.nextval FROM dual;
-
-
 
 //-------------------------------------ADDING EMPLOYEE-----------------------------------------//
 DECLARE
@@ -48,7 +44,105 @@ EXCEPTION
 END;
 /
 
+
+
+
+//------------------------------------TEST ADDING CLIENTS-----------------------------------//
+DECLARE
+    Registration_Address Address := Address('Street9', 'City9', 'Province9', '44444', 'Country9');
+    Phone_number VARCHAR2(255) := '3323333333';
+    First_Name VARCHAR2(20) := 'Pani';
+    Last_Name VARCHAR2(40) := 'Halina';
+
+    First_Name2 VARCHAR2(20) := 'Henryk';
+    Last_Name2 VARCHAR2(40) := 'Ford';
+
+    NIP VARCHAR2(10) := '530211469';
+    Pesel VARCHAR2(11) := '53021148691';
+
+BEGIN
+    CLIENTPACKAGE.ADDPERSONCLIENT(Registration_Address, Phone_number, First_Name, Last_Name, Pesel);
+
+    CLIENTPACKAGE.ADDCOMPANYCLIENT(Registration_Address, Phone_number, First_Name2, Last_Name2, NIP);
+
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
 /
+
+//------------------------------------Client trigger-----------------------------------//
+DECLARE
+    Registration_Address Address := Address('Street9', 'City9', 'Province9', '44444', 'Country9');
+    Phone_number VARCHAR2(255) := '3323333333';
+    First_Name VARCHAR2(20) := 'Pani';
+    Last_Name VARCHAR2(40) := 'Halina';
+
+    Pesel VARCHAR2(11) := '53021148691';
+BEGIN
+--     CLIENTPACKAGE.ADDPERSONCLIENT(cliToAdd);
+
+    CLIENTPACKAGE.ADDPERSONCLIENT(Registration_Address, Phone_number, First_Name, Last_Name, Pesel);
+
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+
+//----------------------------ADD SERVICE------------------------//
+DECLARE
+    description Varchar2(100) := 'Polaczenia i sms bez limitu + Internet 7GB';
+    price Number := 30;
+BEGIN
+
+    BRANCHPACKAGE.ADDSERVICE(description, price);
+
+    description := 'Polaczenia i sms bez limitu + Internet 12GB';
+    price := 50;
+
+    BRANCHPACKAGE.ADDSERVICE(description, price);
+
+END;
+/
+
+-- select * from SERVICETABLE;
+-- select * from EMPLOYEESTABLE;
+-- select * from CLIENTSTABLE;
+-- select * from CLIENTSORDERSTABLE;
+
+//----------------------------ADD ORDER------------------------//
+DECLARE
+    client_ref REF ClientObj;
+    service_ref REF SERVICE;
+    employee_ref REF EMPLOYEE;
+BEGIN
+    client_ref := CLIENTPACKAGE.GETCLIENTBYPESEL('53021148691');
+    service_ref := BRANCHPACKAGE.GETSERVICEBYID(1);
+    employee_ref := EMPLOYEEPACKAGE.GETEMPLOYEEBYPESEL('13333333873');
+
+    ORDERPACKAGE.CREATEORDER(client_ref, service_ref, employee_ref);
+
+END;
+/
+
+//------------------------Generate invoice--------------------------//
+DECLARE
+    ClientID NUMBER := 1;
+    invRef REF INVOICE;
+BEGIN
+    INVOICEPACKAGE.GENERATEINVOICE(ClientID);
+
+    invRef := INVOICEPACKAGE.GETINVOICEBYID(1);
+
+    INVOICEPACKAGE.ShowServices(invRef);
+
+
+END;
+/
+
 
 //-------------------------------------ERROR EMPLOYEE EXISTS-----------------------------------------//
 DECLARE
@@ -157,112 +251,37 @@ END;
 
 //------------------------------------TEST TRIGGERA EMPLOYEE DATY-----------------------------------//
 DECLARE
-    empToAdd EMPLOYEE := Employee(SYSDATE + 367, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-                 'John', 'Johnson', '12333335173', 7000, 'Full Time');
+    Contract_Start_Date DATE := SYSDATE + 367;
+    Contract_End_Date DATE := SYSDATE + 365;
+    Registration_Address Address := Address('Street9', 'City9', 'Province9', '44444', 'Country9');
+    Phone_number VARCHAR2(255) := '3323333333';
+    First_Name VARCHAR2(20) := 'John';
+    Last_Name VARCHAR2(40) := 'Johnson';
+    Pesel VARCHAR2(11) := '22333335173';
+    Salary NUMBER := 7000;
+    EmploymentType VARCHAR2(20) := 'Full Time';
     takenBranchId NUMBER;
 BEGIN
     SELECT BranchId
     INTO takenBranchId
     FROM BRANCHTABLE
     WHERE ROWNUM <= 1;
-    EmployeePackage.AddEmployeeToBranch(empToAdd, takenBranchId);
+    EmployeePackage.AddEmployeeToBranch(
+        Contract_Start_Date,
+        Contract_End_Date,
+        Registration_Address,
+        Phone_number,
+        First_Name,
+        Last_Name,
+        Pesel,
+        Salary,
+        EmploymentType,
+        takenBranchId
+    );
 
 
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-END;
-/
-
-//------------------------------------TEST ADDING CLIENTS-----------------------------------//
-DECLARE
-    cliToAdd CLIENTOBJ := CLIENTOBJ(SYSDATE, SYSDATE + 365,
-        Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-        'Pani', 'Halina', null, '53021148691');
-
-    companyToAdd CLIENTOBJ := CLIENTOBJ(SYSDATE, SYSDATE + 365,
-        Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-        'KARTOFEL', 'SP. Z O. O.', '5302114691', null);
-BEGIN
---     CLIENTPACKAGE.ADDPERSONCLIENT(cliToAdd);
-
-    CLIENTPACKAGE.ADDCOMPANYCLIENT(companyToAdd);
-
-
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-END;
-/
-
-//------------------------------------Client trigger-----------------------------------//
-DECLARE
-    cliToAdd CLIENTOBJ := CLIENTOBJ(SYSDATE, SYSDATE + 365,
-        Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-        'Pani', 'Halina', null, null);
-
-    companyToAdd CLIENTOBJ := CLIENTOBJ(SYSDATE, SYSDATE + 365,
-        Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-        'KARTOFEL', 'SP. Z O. O.', '5302114691', '53021146912');
-BEGIN
---     CLIENTPACKAGE.ADDPERSONCLIENT(cliToAdd);
-
-    CLIENTPACKAGE.ADDCOMPANYCLIENT(companyToAdd);
-
-
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-END;
-/
-
-//----------------------------ADD SERVICE------------------------//
-DECLARE
-    description Varchar2(100) := 'Polaczenia i sms bez limitu + Internet 7GB';
-    price Number := 30;
-BEGIN
-
-    BRANCHPACKAGE.ADDSERVICE(description, price);
-
-    description := 'Polaczenia i sms bez limitu + Internet 12GB';
-    price := 50;
-
-    BRANCHPACKAGE.ADDSERVICE(description, price);
-
-END;
-/
-
-select * from SERVICETABLE;
-select * from EMPLOYEESTABLE;
-select * from CLIENTSTABLE;
-select * from CLIENTSORDERSTABLE;
-
-//----------------------------ADD ORDER------------------------//
-DECLARE
-    client_ref REF ClientObj;
-    service_ref REF SERVICE;
-    employee_ref REF EMPLOYEE;
-BEGIN
-    client_ref := CLIENTPACKAGE.GETCLIENTBYPESEL('53021148691');
-    service_ref := BRANCHPACKAGE.GETSERVICEBYID(1);
-    employee_ref := EMPLOYEEPACKAGE.GETEMPLOYEEBYPESEL('12333333873');
-
-    ORDERPACKAGE.CREATEORDER(client_ref, service_ref, employee_ref);
-
-END;
-/
-
-//------------------------Generate invoice--------------------------//
-DECLARE
-    ClientID NUMBER := 1;
-    invRef REF INVOICE;
-BEGIN
-    INVOICEPACKAGE.GENERATEINVOICE(ClientID);
-
-    invRef := INVOICEPACKAGE.GETINVOICEBYID(1);
-
-    INVOICEPACKAGE.ShowServices(invRef);
-
-
 END;
 /

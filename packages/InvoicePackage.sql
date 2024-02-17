@@ -51,22 +51,17 @@ CREATE OR REPLACE PACKAGE BODY InvoicePackage AS
 
 
     PROCEDURE GenerateInvoice(ClientID IN NUMBER) IS
-        cost NUMBER;
+        newCost NUMBER;
         client_ref REF ClientObj;
-        invoiceToAdd Invoice;
     BEGIN
 
-        SELECT SUM(DEREF(z.SingleService).Price) INTO cost
+        SELECT SUM(DEREF(z.SingleService).Price) INTO newCost
         FROM ClientsOrdersTable z
         WHERE DEREF(z.SingleClient).PERSONID = ClientID AND z.CLOSEORDERDATE is null AND OrderDate < SYSDATE;
 
         SELECT REF(c) INTO client_ref FROM ClientsTable c WHERE CLIENTID = c.PERSONID;
 
-        invoiceToAdd := INVOICE(SYSDATE,cost,client_ref);
-        invoiceToAdd.InvoiceId := InvoiceSequence.nextval;
-
-        INSERT INTO INVOICETABLES VALUES invoiceToAdd;
---         INSERT INTO INVOICETABLES VALUES (INVOICE(SYSDATE,cost,client_ref));
+        INSERT INTO INVOICETABLES VALUES (INVOICE(INVOICESEQUENCE.nextval, SYSDATE, newCost, client_ref));
     END GenerateInvoice;
 
 END InvoicePackage;
