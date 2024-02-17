@@ -53,6 +53,7 @@ END;
 //------------------------------------Client------------------------------------------------//
 
 CREATE SEQUENCE PersonSequence START WITH 1 INCREMENT BY 1;
+/
 
 CREATE OR REPLACE TYPE ClientObj AS OBJECT
 (
@@ -64,10 +65,10 @@ CREATE OR REPLACE TYPE ClientObj AS OBJECT
     NIP                  VARCHAR2(11),
     Pesel                VARCHAR2(11)
 );
-
+/
 
 create table ClientsTable Of ClientObj (PRIMARY KEY (PersonId));
-
+/
 
 //--------------------------------------INVOICE----------------------------------------------//
 CREATE SEQUENCE InvoiceSequence START WITH 1 INCREMENT BY 1;
@@ -98,10 +99,10 @@ CREATE OR REPLACE TYPE Employee AS OBJECT (
     Salary               NUMBER,
     EmploymentType       VARCHAR2(50)
 );
-
 /
-create table EmployeesTable of Employee (EmployeeId PRIMARY KEY );
 
+create table EmployeesTable of Employee (EmployeeId PRIMARY KEY );
+/
 
 
 //---------------------------ORDER----------------------------//

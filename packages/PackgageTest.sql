@@ -81,8 +81,6 @@ DECLARE
 
     Pesel VARCHAR2(11) := '53021148691';
 BEGIN
---     CLIENTPACKAGE.ADDPERSONCLIENT(cliToAdd);
-
     CLIENTPACKAGE.ADDPERSONCLIENT(Registration_Address, Phone_number, First_Name, Last_Name, Pesel);
 
 
@@ -124,6 +122,9 @@ BEGIN
     employee_ref := EMPLOYEEPACKAGE.GETEMPLOYEEBYPESEL('13333333873');
 
     ORDERPACKAGE.CREATEORDER(client_ref, service_ref, employee_ref);
+    service_ref := BRANCHPACKAGE.GETSERVICEBYID(1);
+
+    ORDERPACKAGE.CREATEORDER(client_ref, service_ref, employee_ref);
 
 END;
 /
@@ -139,10 +140,16 @@ BEGIN
 
     INVOICEPACKAGE.ShowServices(invRef);
 
-
 END;
 /
 
+//------------------------------get active services-------------------//
+DECLARE
+    ClientID NUMBER := 1;
+BEGIN
+    CLIENTPACKAGE.GetActiveServices(ClientID);
+END;
+/
 
 //-------------------------------------ERROR EMPLOYEE EXISTS-----------------------------------------//
 DECLARE
@@ -196,26 +203,7 @@ EXCEPTION
 END;
 /
 
-//-------------------------------------EMPLOYEE DOES NOT WORK-----------------------------------------//
-DECLARE
-    emp EMPLOYEE;
-BEGIN
-    SELECT VALUE(e) INTO emp
-    FROM EmployeesTable e
-    WHERE ROWNUM <= 1;
 
-    UPDATE EMPLOYEESTABLE
-    SET CONTRACT_END_DATE = SYSDATE - 1000
-    WHERE EMPLOYEEID = emp.EMPLOYEEID;
-
-    EmployeePackage.CheckIfEmployeeIsCurrentlyWorking(emp);
-
-    ROLLBACK;
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-END;
-/
 
 //------------------------------------EMPLOYEE WORKS IN A BRANCH-------------------------------------//
 
@@ -280,6 +268,27 @@ BEGIN
     );
 
 
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+
+//-------------------------------------EMPLOYEE DOES NOT WORK-----------------------------------------//
+DECLARE
+    emp EMPLOYEE;
+BEGIN
+    SELECT VALUE(e) INTO emp
+    FROM EmployeesTable e
+    WHERE ROWNUM <= 1;
+
+    UPDATE EMPLOYEESTABLE
+    SET CONTRACT_END_DATE = SYSDATE - 1000
+    WHERE EMPLOYEEID = emp.EMPLOYEEID;
+
+    EmployeePackage.CheckIfEmployeeIsCurrentlyWorking(emp);
+
+    ROLLBACK;
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);

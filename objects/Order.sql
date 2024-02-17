@@ -1,7 +1,4 @@
 //---------------------------ORDER----------------------------//
-drop type CLIENTORDER;
-/
-
 CREATE SEQUENCE OrderSequence START WITH 1 INCREMENT BY 1;
 
 CREATE OR REPLACE TYPE ClientOrder AS OBJECT (
@@ -13,6 +10,7 @@ CREATE OR REPLACE TYPE ClientOrder AS OBJECT (
     CloseOrderDate DATE,
 
     CONSTRUCTOR FUNCTION ClientOrder(
+        newId in Number,
         SingleClient IN REF ClientObj,
         SingleService IN REF SERVICE,
         SingleEmployee IN REF EMPLOYEE,
@@ -24,13 +22,14 @@ CREATE OR REPLACE TYPE ClientOrder AS OBJECT (
 
 CREATE OR REPLACE TYPE BODY ClientOrder AS
     CONSTRUCTOR FUNCTION ClientOrder(
+        newId in Number,
         SingleClient in REF ClientObj,
         SingleService in REF SERVICE,
         SingleEmployee in REF EMPLOYEE,
         OrderDate in Date
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.OrderId := OrderSequence.nextval;
+        SELF.OrderId := newId;
         SELF.SingleClient := SingleClient;
         SELF.SingleService := SingleService;
         SELF.SingleEmployee := SingleEmployee;
