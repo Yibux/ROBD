@@ -30,6 +30,8 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
             RAISE CLIENT_EXISTS_EXCEPTION;
         end if;
 
+        clientToAdd.PersonId := PERONSEQUENCE.nextval;
+
         INSERT INTO CLIENTSTABLE VALUES clientToAdd;
         COMMIT;
         DBMS_OUTPUT.PUT_LINE(
@@ -60,6 +62,8 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
         IF cli IS NOT NULL THEN
             RAISE CLIENT_EXISTS_EXCEPTION;
         end if;
+
+        clientToAdd.PersonId := PERONSEQUENCE.nextval;
 
         INSERT INTO CLIENTSTABLE VALUES clientToAdd;
         COMMIT;
@@ -92,22 +96,22 @@ CREATE OR REPLACE PACKAGE BODY ClientPackage AS
         WHERE DEREF(c.SINGLECLIENT).PersonID = p_PersonID
         AND CLOSEORDERDATE IS NULL;
 
-    v_service_description VARCHAR2(100);
-    v_service_price NUMBER;
-    ORDER_ID NUMBER;
-BEGIN
-    OPEN orderCursor;
+            v_service_description VARCHAR2(100);
+            v_service_price NUMBER;
+            ORDER_ID NUMBER;
+        BEGIN
+            OPEN orderCursor;
 
-    LOOP
-        FETCH orderCursor INTO v_service_description, v_service_price,ORDER_ID;
-        EXIT WHEN orderCursor%NOTFOUND;
-        DBMS_OUTPUT.PUT_LINE('Order ID: ' || ORDER_ID ||' Description: ' || v_service_description || ' Price: ' || v_service_price);
-    END LOOP;
+            LOOP
+                FETCH orderCursor INTO v_service_description, v_service_price,ORDER_ID;
+                EXIT WHEN orderCursor%NOTFOUND;
+                DBMS_OUTPUT.PUT_LINE('Order ID: ' || ORDER_ID ||' Description: ' || v_service_description || ' Price: ' || v_service_price);
+            END LOOP;
 
-    CLOSE orderCursor;
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
-END GetActiveServices;
+            CLOSE orderCursor;
+        EXCEPTION
+            WHEN OTHERS THEN
+                DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+        END GetActiveServices;
 
 END;

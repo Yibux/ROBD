@@ -22,7 +22,7 @@ CREATE OR REPLACE TYPE BODY Service AS
         Price IN NUMBER
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.ServiceId := ServiceSequence.nextval;
+--         SELF.ServiceId := ServiceSequence.nextval;
         SELF.Description := Description;
         SELF.Price := Price;
         RETURN;
@@ -108,7 +108,7 @@ CREATE OR REPLACE TYPE BODY ClientObj AS
         Pesel VARCHAR2
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.PersonId := PersonSequence.nextval;
+--         SELF.PersonId := PersonSequence.nextval;
         SELF.Registration_Address := Registration_Address;
         SELF.Phone_Number := Phone_Number;
         SELF.First_Name := First_Name;
@@ -149,7 +149,7 @@ CREATE OR REPLACE TYPE BODY Invoice AS
         SingleClient in ref ClientObj
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.InvoiceId := InvoiceSequence.nextval;
+--         SELF.InvoiceId := InvoiceSequence.nextval;
         SELF.IssueDate := IssueDate;
         SELF.Cost := Cost;
         SELF.SingleClient := SingleClient;
@@ -160,19 +160,6 @@ END;
 
 create table InvoiceTables of INVOICE(InvoiceId PRIMARY KEY);
 /
-
-INSERT INTO ServiceTable VALUES (Service('Service1', 50));
-INSERT INTO ServiceTable VALUES (Service('Service2', 75));
-INSERT INTO ServiceTable VALUES (Service('Service3', 100));
-
-INSERT INTO ClientsTable VALUES (ClientObj( Address('Street4', 'City4', 'Province4', '98765', 'Country4'), '1234567890', 'John', 'Doe', '12345678901', '98765432101'));
-INSERT INTO ClientsTable VALUES (ClientObj( Address('Street5', 'City5', 'Province5', '54321', 'Country5'), '0987654321', 'Jane', 'Smith', '98765432102', '12345678902'));
-
-
-SELECT * FROM ServiceTable;
-SELECT * FROM ClientsTable;
-
-
 
 //--------------------------------EMPLOYEE----------------------------------------//
 CREATE SEQUENCE EmployeeSequence START WITH 1 INCREMENT BY 1;
@@ -217,7 +204,7 @@ CREATE OR REPLACE TYPE BODY Employee AS
         EmploymentType IN VARCHAR2
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.EMPLOYEEID := EMPLOYEESEQUENCE.nextval;
+--         SELF.EMPLOYEEID := EMPLOYEESEQUENCE.nextval;
         SELF.Contract_Start_Date := Contract_Start_Date;
         SELF.Contract_End_Date := Contract_End_Date;
         SELF.Registration_Address := Registration_Address;
@@ -266,7 +253,7 @@ CREATE OR REPLACE TYPE BODY ClientOrder AS
         OrderDate in Date
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.OrderId := OrderSequence.nextval;
+--         SELF.OrderId := OrderSequence.nextval;
         SELF.SingleClient := SingleClient;
         SELF.SingleService := SingleService;
         SELF.SingleEmployee := SingleEmployee;
@@ -287,13 +274,14 @@ Create table ClientsOrdersTable of CLIENTORDER (OrderId PRIMARY KEY );
 //--------------------------------BRANCH----------------------------------------------------//
 Create type EmployeeList as table of Employee;
 
-CREATE SEQUENCE BranchSequence START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE BranchSequence START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
 CREATE OR REPLACE TYPE Branch AS OBJECT (
     BranchId Number,
     Branch_address Address,
     Employees EmployeeList,
     CONSTRUCTOR FUNCTION Branch(
+         NewBranchId IN NUMBER,
         Branch_address IN Address
     ) RETURN SELF AS RESULT
 );
@@ -301,12 +289,12 @@ CREATE OR REPLACE TYPE Branch AS OBJECT (
 
 CREATE OR REPLACE TYPE BODY Branch AS
     CONSTRUCTOR FUNCTION Branch(
-
+        NewBranchId IN NUMBER,
         Branch_address IN Address
 
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.BRANCHID := BranchSequence.nextval;
+        SELF.BRANCHID := NewBranchId;
         SELF.Branch_address := Branch_address;
         SELF.Employees := EmployeeList();
         RETURN;
@@ -316,87 +304,3 @@ END;
 create table BranchTable of Branch (BranchId PRIMARY KEY )
 nested table Employees store as EmployeeListTable_nested;
 /
---
-INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street6', 'City6', 'Province6', '11111', 'Country6'), '1111111111', 'John', 'Smith', '11111111111', 5000, 'Full Time'));
-INSERT INTO EmployeesTable VALUES (Employee(SYSDATE, SYSDATE + 365, Address('Street7', 'City7', 'Province7', '22222', 'Country7'), '2222222222', 'Jane', 'Doe', '22222222222', 6000, 'Part Time'));
-
-INSERT INTO BranchTable VALUES (
-    Branch(
-        Address('Street8', 'City8', 'Province8', '33333', 'Country8'))
-);
---         EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3333333333', 'Alice', 'Johnson', '33333333333', 7000, 'Full Time')))
-
---
-INSERT INTO BranchTable VALUES (
-    Branch(
-        Address('Street10', 'City10', 'Province10', '55555', 'Country10'))
-
-);
---         EmployeeList(Employee(SYSDATE, SYSDATE + 365, Address('Street11', 'City11', 'Province11', '66666', 'Country11'), '4444444444', 'Bob', 'Miller', '44444444444', 8000, 'Part Time'))
-
---
-INSERT INTO ClientsOrdersTable VALUES (
-    ClientOrder(
-        (SELECT REF(c) FROM ClientsTable c WHERE ROWNUM = 1),
-        (SELECT REF(s) FROM ServiceTable s WHERE ROWNUM = 1),
-        (SELECT REF(e) FROM EmployeesTable e WHERE ROWNUM = 1),
-        SYSDATE
-    )
-);
-
-SELECT * FROM ServiceTable;
-SELECT * FROM ClientsTable;
-SELECT * FROM InvoiceTables;
-SELECT * FROM EmployeesTable;
-SELECT * FROM ClientsOrdersTable;
-Select * from BranchTable;
-
-DECLARE
-    client_ref REF ClientObj;
-    service_ref REF SERVICE;
-    employee_ref REF EMPLOYEE;
-    client_id NUMBER := 101;
-    invoice_ref REF Invoice;
-    order_ref REF ClientOrder;
-    order_obj ClientOrder;
-    order_date DATE;
-BEGIN
-
---         BRANCHPACKAGE.ADDBRANCH(Address('Street10', 'City10', 'Province10', '55555', 'Country10'));
---         EMPLOYEEPACKAGE.ADDEMPLOYEETOBRANCH(Employee(SYSDATE, SYSDATE + 365, Address('Street11', 'City11', 'Province11', '66666', 'Country11'), '4444444444', 'Bob', 'Miller', '44444444444', 8000, 'Part Time'),41);
---     SELECT REF(c) INTO client_ref FROM ClientsTable c WHERE PERSONID = client_id;
---     SELECT REF(s) INTO service_ref FROM ServiceTable s WHERE SERVICEID = 1;
---     SELECT REF(e) INTO employee_ref FROM EmployeesTable e WHERE EMPLOYEEID = 221;
---     order_date := SYSDATE;
--- --
---     ORDERPACKAGE.CREATEORDER(client_ref,service_ref,employee_ref);
-
-    ORDERPACKAGE.SHOWORDERSBYCLIENT(client_id);
---     ORDERPACKAGE.SHOWORDERSBYEMPLOYEE(221);
-
---        INVOICEPACKAGE.GENERATEINVOICE(client_id);
-
-        SELECT REF(c) INTO invoice_ref FROM INVOICETABLES c WHERE INVOICEID = 101;
---        INVOICEPACKAGE.SHOWSERVICES(invoice_ref);
--- -- --
--- -- --
---         CLIENTPACKAGE.GETACTIVESERVICES(client_id);
---
---        SELECT VALUE(e) INTO order_obj FROM ClientsOrdersTable e WHERE orderid = 161;
---         order_obj.CLOSEORDER();
---         UPDATE ClientsOrdersTable e SET e = order_obj WHERE orderid = 161;
---
---
---         DBMS_OUTPUT.PUT_LINE('---------------------------------');
---
---         CLIENTPACKAGE.GETACTIVESERVICES(client_id);
---
---
-        INVOICEPACKAGE.SHOWSERVICES(invoice_ref);
-
-END;
-
-
-
---todo: package, generowanie faktur, dodawanie pracowników, show ordersbyemp/client, getclientbypesel
-

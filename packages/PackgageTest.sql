@@ -1,45 +1,85 @@
 //------------------------------ADD BRANCH------------------------//
 DECLARE
     addresstToAdd ADDRESS := Address('Street9', 'City9', 'Province9', '44444', 'Country9');
+    addresstToAdd2 ADDRESS := Address('Street2', 'City2', 'Province2', '44444', 'Country2');
 BEGIN
     BranchPackage.ADDBRANCH(addresstToAdd);
+    BranchPackage.ADDBRANCH(addresstToAdd2);
 END;
 /
 
 select * from BRANCHTABLE;
+SELECT BRANCHSEQUENCE.nextval FROM dual;
 
 
 
 //-------------------------------------ADDING EMPLOYEE-----------------------------------------//
 DECLARE
-    empToAdd EMPLOYEE := Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-                 'John', 'Johnson', '12333333873', 7000, 'Full Time');
+    Contract_Start_Date DATE := SYSDATE;
+    Contract_End_Date DATE := SYSDATE + 365;
+    Registration_Address Address := Address('Street9', 'City9', 'Province9', '44444', 'Country9');
+    Phone_number VARCHAR2(255) := '3323333333';
+    First_Name VARCHAR2(20) := 'John';
+    Last_Name VARCHAR2(40) := 'Johnson';
+    Pesel VARCHAR2(11) := '13333333873';
+    Salary NUMBER := 7000;
+    EmploymentType VARCHAR2(20) := 'Full Time';
     takenBranchId NUMBER;
 BEGIN
     SELECT BranchId
     INTO takenBranchId
     FROM BRANCHTABLE
     WHERE ROWNUM <= 1;
-    EmployeePackage.AddEmployeeToBranch(empToAdd, takenBranchId);
-
-
+    EmployeePackage.AddEmployeeToBranch(
+        Contract_Start_Date,
+        Contract_End_Date,
+        Registration_Address,
+        Phone_number,
+        First_Name,
+        Last_Name,
+        Pesel,
+        Salary,
+        EmploymentType,
+        takenBranchId
+    );
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
 /
 
+/
+
 //-------------------------------------ERROR EMPLOYEE EXISTS-----------------------------------------//
 DECLARE
-    empToAdd EMPLOYEE := Employee(SYSDATE, SYSDATE + 365, Address('Street9', 'City9', 'Province9', '44444', 'Country9'), '3323333333',
-                 'John', 'Johnson', '12333333873', 7000, 'Full Time');
+    Contract_Start_Date DATE := SYSDATE;
+    Contract_End_Date DATE := SYSDATE + 365;
+    Registration_Address Address := Address('Street9', 'City9', 'Province9', '44444', 'Country9');
+    Phone_number VARCHAR2(255) := '3323333333';
+    First_Name VARCHAR2(20) := 'John';
+    Last_Name VARCHAR2(40) := 'Johnson';
+    Pesel VARCHAR2(11) := '13333333873';
+    Salary NUMBER := 7000;
+    EmploymentType VARCHAR2(20) := 'Full Time';
     takenBranchId NUMBER;
 BEGIN
     SELECT BranchId
     INTO takenBranchId
     FROM BRANCHTABLE
     WHERE ROWNUM <= 1;
-    EmployeePackage.AddEmployeeToBranch(empToAdd, takenBranchId);
+
+    EmployeePackage.AddEmployeeToBranch(
+        Contract_Start_Date,
+        Contract_End_Date,
+        Registration_Address,
+        Phone_number,
+        First_Name,
+        Last_Name,
+        Pesel,
+        Salary,
+        EmploymentType,
+        takenBranchId
+    );
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);

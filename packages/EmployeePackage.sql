@@ -1,7 +1,16 @@
+-- drop package EMPLOYEEPACKAGE;
 CREATE OR REPLACE PACKAGE EmployeePackage AS
 
     PROCEDURE AddEmployeeToBranch(
-        employeeToAdd IN EMPLOYEE,
+        Contract_Start_Date IN DATE,
+        Contract_End_Date IN DATE,
+        Registration_Address IN Address,
+        Phone_number IN VARCHAR2,
+        First_Name IN VARCHAR2,
+        Last_Name IN VARCHAR2,
+        PeselToAdd IN VARCHAR2,
+        Salary IN NUMBER,
+        EmploymentType IN VARCHAR2,
         idForBranch IN NUMBER
     );
 
@@ -23,24 +32,37 @@ END EmployeePackage;
 CREATE OR REPLACE PACKAGE BODY EmployeePackage AS
 
     PROCEDURE AddEmployeeToBranch(
-        employeeToAdd IN EMPLOYEE,
+        Contract_Start_Date IN DATE,
+        Contract_End_Date IN DATE,
+        Registration_Address IN Address,
+        Phone_number IN VARCHAR2,
+        First_Name IN VARCHAR2,
+        Last_Name IN VARCHAR2,
+        PeselToAdd IN VARCHAR2,
+        Salary IN NUMBER,
+        EmploymentType IN VARCHAR2,
         idForBranch IN NUMBER
     ) IS
         EMPLOYEE_EXIST_EXCEPTION EXCEPTION;
         emp EMPLOYEE;
+        employeeToAdd EMPLOYEE;
     BEGIN
+
         Begin
             SELECT VALUE(e) INTO emp
             FROM EmployeesTable e
-            WHERE e.pesel = employeeToAdd.PESEL and ROWNUM <= 1;
+            WHERE e.pesel = PeselToAdd and ROWNUM <= 1;
+
         EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            emp := NULL;
+                emp := NULL;
         END;
 
         IF emp IS NOT NULL THEN
             RAISE EMPLOYEE_EXIST_EXCEPTION;
         end if;
+
+        employeeToAdd := Employee(EmployeeSequence.nextval, Contract_Start_Date, Contract_End_Date, Registration_Address, Phone_number, First_Name, Last_Name, PeselToAdd, Salary, EmploymentType);
 
         INSERT INTO EMPLOYEESTABLE VALUES (employeeToAdd);
 
@@ -56,7 +78,7 @@ CREATE OR REPLACE PACKAGE BODY EmployeePackage AS
 
         COMMIT;
         DBMS_OUTPUT.PUT_LINE(
-                'Employee with ID: ' || employeeToAdd.EMPLOYEEID || ', name: ' || employeeToAdd.FIRST_NAME || ' ' || employeeToAdd.LAST_NAME || 'added successfully'
+                'Employee with ID: ' || employeeToAdd.EMPLOYEEID || ', name: ' || employeeToAdd.FIRST_NAME || ' ' || employeeToAdd.LAST_NAME || ' added successfully'
         );
         EXCEPTION
             WHEN EMPLOYEE_EXIST_EXCEPTION THEN
@@ -64,7 +86,8 @@ CREATE OR REPLACE PACKAGE BODY EmployeePackage AS
             WHEN NO_DATA_FOUND THEN
                 RAISE_APPLICATION_ERROR(-20005, 'Branch does not exist');
 
-    END AddEmployeeToBranch;
+    END;
+
 
 
     PROCEDURE CheckIfEmployeeIsCurrentlyWorking(
@@ -78,12 +101,13 @@ CREATE OR REPLACE PACKAGE BODY EmployeePackage AS
         WHERE EmployeeId = employeeToCheck.EmployeeId;
 
         IF currentContractEnd IS NULL THEN
-            RAISE_APPLICATION_ERROR(-20005, 'Employee has no active contract.');
+            RAISE_APPLICATION_ERROR(-20005, 'Employee with ID: ' || employeeToCheck.EMPLOYEEID || ', name: ' || employeeToCheck.FIRST_NAME || ' ' || employeeToCheck.LAST_NAME || ' has no active contract.');
         ELSIF currentContractEnd >= SYSDATE THEN
-            DBMS_OUTPUT.PUT_LINE('Employee is currently working.');
+            DBMS_OUTPUT.PUT_LINE('Employee with ID: ' || employeeToCheck.EMPLOYEEID || ', name: ' || employeeToCheck.FIRST_NAME || ' ' || employeeToCheck.LAST_NAME || ' is currently working.');
         ELSE
-            RAISE_APPLICATION_ERROR(-20005, 'Employee contract has ended.');
+            RAISE_APPLICATION_ERROR(-20005, 'Employee with ID: ' || employeeToCheck.EMPLOYEEID || ', name: ' || employeeToCheck.FIRST_NAME || ' ' || employeeToCheck.LAST_NAME || ' contract has ended.');
         END IF;
+
     END CheckIfEmployeeIsCurrentlyWorking;
 
     PROCEDURE CheckIfEmployeeWorksInTheBranch(

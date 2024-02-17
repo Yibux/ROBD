@@ -22,7 +22,7 @@ CREATE OR REPLACE TYPE BODY Service AS
         Price IN NUMBER
     ) RETURN SELF AS RESULT IS
     BEGIN
-        SELF.ServiceId := ServiceSequence.nextval;
+--         SELF.ServiceId := ServiceSequence.nextval;
         SELF.Description := Description;
         SELF.Price := Price;
         RETURN;
