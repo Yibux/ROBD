@@ -1,3 +1,27 @@
+drop trigger CheckContractDates;
+/
+
+drop trigger CheckClientContractDates;
+/
+
+drop trigger CheckClientNipOrPesel;
+/
+
+drop package BranchPackage;
+/
+
+drop package ClientPackage;
+/
+
+drop package EmployeePackage;
+/
+
+drop package InvoicePackage;
+/
+
+drop package OrderPackage ;
+/
+
 drop table BranchTable;
 /
 

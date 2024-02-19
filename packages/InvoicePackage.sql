@@ -1,6 +1,3 @@
-drop package InvoicePackage;
-/
-
 CREATE OR REPLACE PACKAGE InvoicePackage AS
 
     PROCEDURE GenerateInvoice(ClientID IN NUMBER);
@@ -62,6 +59,9 @@ CREATE OR REPLACE PACKAGE BODY InvoicePackage AS
         SELECT REF(c) INTO client_ref FROM ClientsTable c WHERE CLIENTID = c.PERSONID;
 
         INSERT INTO INVOICETABLES VALUES (INVOICE(INVOICESEQUENCE.nextval, SYSDATE, newCost, client_ref));
+        Commit;
+
+        DBMS_OUTPUT.PUT_LINE('Invoice netto price: ' || newCost || ', invoice brutto: ' || newCost*1.23);
     END GenerateInvoice;
 
 END InvoicePackage;

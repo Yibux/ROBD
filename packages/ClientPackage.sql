@@ -1,6 +1,3 @@
-drop package ClientPackage;
-/
-
 CREATE OR REPLACE PACKAGE ClientPackage AS
 
    PROCEDURE addPersonClient(

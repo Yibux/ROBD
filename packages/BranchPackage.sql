@@ -1,6 +1,3 @@
-drop package branchpackage;
-/
-
 CREATE OR REPLACE PACKAGE BranchPackage AS
 
     PROCEDURE addBranch(BranchAddress in ADDRESS);

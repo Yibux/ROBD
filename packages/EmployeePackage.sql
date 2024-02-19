@@ -1,4 +1,3 @@
--- drop package EMPLOYEEPACKAGE;
 CREATE OR REPLACE PACKAGE EmployeePackage AS
 
     PROCEDURE AddEmployeeToBranch(

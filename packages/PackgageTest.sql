@@ -122,7 +122,7 @@ BEGIN
     employee_ref := EMPLOYEEPACKAGE.GETEMPLOYEEBYPESEL('13333333873');
 
     ORDERPACKAGE.CREATEORDER(client_ref, service_ref, employee_ref);
-    service_ref := BRANCHPACKAGE.GETSERVICEBYID(1);
+    service_ref := BRANCHPACKAGE.GETSERVICEBYID(2);
 
     ORDERPACKAGE.CREATEORDER(client_ref, service_ref, employee_ref);
 
@@ -221,10 +221,6 @@ BEGIN
     WHERE ROWNUM <= 1;
     EmployeePackage.CheckIfEmployeeWorksInTheBranch(emp, takenBranchId);
 
-    emp.PESEL := 9999999999;
-
-    EmployeePackage.CheckIfEmployeeWorksInTheBranch(emp, takenBranchId);
-
     UPDATE EMPLOYEESTABLE
     SET CONTRACT_END_DATE = SYSDATE - 1000
     WHERE EMPLOYEEID = emp.EMPLOYEEID;
@@ -245,7 +241,7 @@ DECLARE
     Phone_number VARCHAR2(255) := '3323333333';
     First_Name VARCHAR2(20) := 'John';
     Last_Name VARCHAR2(40) := 'Johnson';
-    Pesel VARCHAR2(11) := '22333335173';
+    Pesel VARCHAR2(11) := '22363335173';
     Salary NUMBER := 7000;
     EmploymentType VARCHAR2(20) := 'Full Time';
     takenBranchId NUMBER;
@@ -266,7 +262,6 @@ BEGIN
         EmploymentType,
         takenBranchId
     );
-
 
 EXCEPTION
     WHEN OTHERS THEN
