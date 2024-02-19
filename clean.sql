@@ -1,9 +1,6 @@
 drop trigger CheckContractDates;
 /
 
-drop trigger CheckClientContractDates;
-/
-
 drop trigger CheckClientNipOrPesel;
 /
 

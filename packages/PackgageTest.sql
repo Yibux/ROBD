@@ -57,7 +57,7 @@ DECLARE
     First_Name2 VARCHAR2(20) := 'Henryk';
     Last_Name2 VARCHAR2(40) := 'Ford';
 
-    NIP VARCHAR2(10) := '530211469';
+    NIP VARCHAR2(10) := '5302114691';
     Pesel VARCHAR2(11) := '53021148691';
 
 BEGIN
@@ -79,7 +79,7 @@ DECLARE
     First_Name VARCHAR2(20) := 'Pani';
     Last_Name VARCHAR2(40) := 'Halina';
 
-    Pesel VARCHAR2(11) := '53021148691';
+    Pesel VARCHAR2(11) := '5302114869';
 BEGIN
     CLIENTPACKAGE.ADDPERSONCLIENT(Registration_Address, Phone_number, First_Name, Last_Name, Pesel);
 
@@ -106,11 +106,6 @@ BEGIN
 END;
 /
 
--- select * from SERVICETABLE;
--- select * from EMPLOYEESTABLE;
--- select * from CLIENTSTABLE;
--- select * from CLIENTSORDERSTABLE;
-
 //----------------------------ADD ORDER------------------------//
 DECLARE
     client_ref REF ClientObj;
@@ -129,9 +124,12 @@ BEGIN
 END;
 /
 
+select * from SERVICETABLE;
+select * from CLIENTSTABLE;
+
 //------------------------Generate invoice--------------------------//
 DECLARE
-    ClientID NUMBER := 1;
+    ClientID NUMBER := 4;
     invRef REF INVOICE;
 BEGIN
     INVOICEPACKAGE.GENERATEINVOICE(ClientID);
@@ -145,7 +143,7 @@ END;
 
 //------------------------------get active services-------------------//
 DECLARE
-    ClientID NUMBER := 1;
+    ClientID NUMBER := 4;
 BEGIN
     CLIENTPACKAGE.GetActiveServices(ClientID);
 END;
